@@ -1,0 +1,25 @@
+schema_version: 1
+id: nightly-backup
+kind: automation
+
+metadata:
+  name: Nightly Backup Job
+  description: Automated backup pipeline
+  schedule: "0 2 * * *"
+
+status: operational
+
+relations:
+  - type: reads
+    target: postgres-db
+  - type: writes
+    target: backup-storage
+
+criticality:
+  business: high
+  operational: medium
+  technical: medium
+
+tags:
+  - backup
+  - scheduled

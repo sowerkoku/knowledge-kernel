@@ -1,0 +1,22 @@
+schema_version: 1
+id: storage-server-01
+kind: asset
+
+metadata:
+  name: Storage Server 01
+  description: Dedicated storage server for backups
+  specs:
+    cpu: 4 vCPU
+    ram: 16 GB
+    disk: 4 TB HDD
+
+status: operational
+
+criticality:
+  business: high
+  operational: medium
+  technical: medium
+
+tags:
+  - vm
+  - storage-tier

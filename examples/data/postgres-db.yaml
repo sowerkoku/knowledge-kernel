@@ -1,0 +1,24 @@
+schema_version: 1
+id: postgres-db
+kind: data
+
+metadata:
+  name: PostgreSQL Database
+  description: Main application database
+  engine: PostgreSQL 15
+  size: "5 GB"
+
+status: operational
+
+relations:
+  - type: runs_on
+    target: db-server-01
+
+criticality:
+  business: high
+  operational: high
+  technical: high
+
+tags:
+  - database
+  - persistence

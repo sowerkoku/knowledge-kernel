@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-cmdb"
+version = "1.0.0-draft"
+description = "Configuration Management Database for AI Agent Ecosystems"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Nous Research", email = "contact@nousresearch.com"}
+]
+keywords = [
+    "cmdb",
+    "infrastructure",
+    "agents",
+    "dependency-graph",
+    "validation",
+    "netbox",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Database :: Database Engines/Servers",
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "black>=24.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+cmdb = "cmdb.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sowerkoku/agent-cmdb"
+Documentation = "https://github.com/sowerkoku/agent-cmdb/tree/main/docs"
+Repository = "https://github.com/sowerkoku/agent-cmdb"
+Issues = "https://github.com/sowerkoku/agent-cmdb/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cmdb*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

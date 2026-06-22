@@ -1,0 +1,25 @@
+schema_version: 1
+id: web-server
+kind: software
+
+metadata:
+  name: Example Web Server
+  description: nginx web server for demonstration
+  version: "1.24"
+
+status: operational
+
+relations:
+  - type: runs_on
+    target: app-server-01
+  - type: uses
+    target: postgres-db
+
+criticality:
+  business: medium
+  operational: high
+  technical: low
+
+tags:
+  - web
+  - example

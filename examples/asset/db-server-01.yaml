@@ -1,0 +1,22 @@
+schema_version: 1
+id: db-server-01
+kind: asset
+
+metadata:
+  name: Database Server 01
+  description: Dedicated database server
+  specs:
+    cpu: 8 vCPU
+    ram: 32 GB
+    disk: 500 GB SSD
+
+status: operational
+
+criticality:
+  business: high
+  operational: high
+  technical: high
+
+tags:
+  - vm
+  - database-tier

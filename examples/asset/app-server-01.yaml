@@ -1,0 +1,22 @@
+schema_version: 1
+id: app-server-01
+kind: asset
+
+metadata:
+  name: Application Server 01
+  description: Virtual machine for application hosting
+  specs:
+    cpu: 4 vCPU
+    ram: 16 GB
+    disk: 200 GB SSD
+
+status: operational
+
+criticality:
+  business: high
+  operational: high
+  technical: medium
+
+tags:
+  - vm
+  - application-tier
