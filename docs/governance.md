@@ -4,10 +4,18 @@ Reglas de evolución y mantenimiento. Separación Registry ≠ Wiki/ADR.
 
 ---
 
-## Regla 0 (CRÍTICA)
+## Test de Supervivencia (filtro oficial)
 
-> **No se modifica la estructura del Registry hasta que una consulta real falle.**
+Una entidad pertenece al Registry si pasa estas 3 queries sin leer texto libre:
 
+```python
+registry_dependencies(X)   # ¿De qué depende X?
+registry_dependents(X)     # ¿Qué se rompe si X cae?
+registry_validate()        # ¿Está todo integro?
+```
+
+- ✅ **Sí pasa** → Registry (hechos indexables, relaciones navegables)
+- ❌ **No pasa** → Wiki (narrativa, contexto, decisiones)
 Esto significa:
 - No agregar categorías por anticipación
 - No agregar campos por anticipación
