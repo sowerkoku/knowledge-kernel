@@ -122,14 +122,56 @@ assert v["valid"], v["errors"]
 ## Categorías y sus entidades tipo
 
 ```
-assets/         → servidores, pcs, dispositivos, routers
+agents/        → perfiles Hermes vivos (Devon, Arquitectobi, IngenieroSQL, etc.)
+assets/        → servidores, pcs, dispositivos, routers
 software/       → Docker containers, daemons, CLIs
 data/           → databases, backups, datasets
 automation/     → sync scripts, cron jobs
 projects/       → proyectos CIC
 procedures/     → runbooks, procesos documentados
-endpoints/      → URLs/HTTP interfaces de software
+endpoints/      → URLs/HTTP interfaces de software (placeholder)
 ```
+
+## Principios Arquitectónicos de Skills (Cico)
+
+> "La skill debe manejar solo hechos, la narrativa y docs deben vivir fuera (wiki u otro lugar). Versionado con git, historia con commits. La skill son hechos (.yaml indexables) nada que no sea indexable puede vivir en la skill." — Cico, 2026-06-22
+
+### Estructura de una skill bien diseñada
+
+```
+skill/
+├── SKILL.md          # SOLO hechos indexables: API, trigger, pitfalls, verification
+│                      # NUNCA: estado actual, IPs, paths, narrativa extensa
+├── docs/             # narrativa, patrones, guías de uso
+├── references/       # conocimiento temático detallado
+├── scripts/          # acciones re-ejecutables
+└── tests/            # validación de invariantes
+```
+
+### Qué VA en SKILL.md
+- API de funciones
+- Trigger conditions
+- Pitfalls documentados
+- Verificación steps
+- Anti-patterns
+- Referencias a `docs/` (`docs/*.md`)
+
+### Qué NO VA en SKILL.md
+- IPs, paths, nombres de archivos específicos (envejecen)
+- Estado actual del sistema (snapshot que envejece)
+- Narrativa > 10 líneas
+- Contenido no indexable
+
+### Docs externos
+Narrativa, patrones de uso, auditorías van en `docs/`. No compiten con el skill — lo complementan.
+
+### Git para skills
+Iniciar repo git en `~/.hermes/skills/<skill>/`. Cada cambio significativo = commit. Git guarda historia.
+
+### GitHub: SSH ≠ API Token
+- **SSH** (`git@github.com:...`): solo clone/push a repos que ya existen
+- **API Token** (OAuth PAT): crear repos, issues, gestionar recursos
+- Push a repo inexistente → `ERROR: Repository not found` — GitHub no auto-crea
 
 ##不走之法 (Anti-patterns)
 

@@ -18,7 +18,7 @@ import glob
 from typing import Optional, Dict, List, Set, Any
 
 REGISTRY_CATEGORIES = frozenset({
-    "assets", "software", "data", "automation",
+    "agents", "assets", "software", "data", "automation",
     "projects", "procedures", "endpoints",
 })
 
