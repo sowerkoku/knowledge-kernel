@@ -1,9 +1,0 @@
-id: hermes-webon-gateway
-category: endpoints
-type: agent-gateway
-name: Hermes (webon)
-url: http://192.168.1.52:8000
-service_ref: hermes-webon
-access: internal
-auth: none
-notes: Profile webon, PID 1167

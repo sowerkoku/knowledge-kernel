@@ -1,9 +1,0 @@
-id: hermes-qaconsistencia-gateway
-category: endpoints
-type: agent-gateway
-name: Hermes (qaconsistencia)
-url: http://192.168.1.52:8000
-service_ref: hermes-qaconsistencia
-access: internal
-auth: none
-notes: Profile qaconsistencia, PID 1166

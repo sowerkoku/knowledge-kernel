@@ -1,8 +1,0 @@
-id: searxng-ui
-category: endpoints
-type: search-ui
-name: SearXNG
-url: http://192.168.1.54:8888
-service_ref: searxng
-access: public
-auth: none

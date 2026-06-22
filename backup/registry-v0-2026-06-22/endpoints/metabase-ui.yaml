@@ -1,9 +1,0 @@
-id: metabase-ui
-category: endpoints
-type: bi-dashboard
-name: Metabase
-url: http://192.168.1.54:3000
-service_ref: metabase
-access: internal
-auth: required
-notes: Credenciales en secrets/metabase.yaml

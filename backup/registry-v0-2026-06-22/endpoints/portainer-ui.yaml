@@ -1,9 +1,0 @@
-id: portainer-ui
-category: endpoints
-type: container-ui
-name: Portainer
-url: https://192.168.1.54:9443
-service_ref: portainer
-access: internal
-auth: required
-notes: Certificado auto-firmado

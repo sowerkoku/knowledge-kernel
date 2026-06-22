@@ -1,8 +1,0 @@
-id: adguardhome-dns
-category: endpoints
-type: dns-server
-name: AdGuard DNS
-url: dns://192.168.1.54:53
-service_ref: adguardhome
-access: internal
-auth: none

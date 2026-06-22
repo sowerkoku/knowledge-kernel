@@ -1,8 +1,0 @@
-id: adguardhome-ui
-category: endpoints
-type: dns-ui
-name: AdGuard Home
-url: http://192.168.1.54:8083
-service_ref: adguardhome
-access: internal
-auth: required

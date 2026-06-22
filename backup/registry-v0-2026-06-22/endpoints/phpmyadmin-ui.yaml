@@ -1,9 +1,0 @@
-id: phpmyadmin-ui
-category: endpoints
-type: db-ui
-name: phpMyAdmin
-url: http://192.168.1.54:80
-service_ref: phpmyadmin
-access: internal
-auth: required
-notes: Server=mysql:3306, credenciales en secrets/phpmyadmin.yaml
