@@ -1,0 +1,18 @@
+schema_version: 1
+id: device-103
+kind: endpoint
+metadata:
+  name: Device 103
+  description: Dispositivo en red local
+  ip_address: 192.168.1.103
+  mac_address: 18:DE:50:E1:91:D5
+  network: 192.168.1.0/24
+  interface: wlan0
+status: operational
+relations:
+- type: connected_to
+  target: network-192-168-1-0
+criticality:
+  business: low
+  operational: low
+  technical: low

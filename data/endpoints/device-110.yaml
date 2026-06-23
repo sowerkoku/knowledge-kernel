@@ -1,0 +1,18 @@
+schema_version: 1
+id: device-110
+kind: endpoint
+metadata:
+  name: Device 110
+  description: Dispositivo en red local
+  ip_address: 192.168.1.110
+  mac_address: 0E:95:98:E8:3D:5B
+  network: 192.168.1.0/24
+  interface: wlan0
+status: operational
+relations:
+- type: connected_to
+  target: network-192-168-1-0
+criticality:
+  business: low
+  operational: low
+  technical: low

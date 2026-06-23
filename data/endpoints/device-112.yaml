@@ -1,0 +1,18 @@
+schema_version: 1
+id: device-112
+kind: endpoint
+metadata:
+  name: Device 112
+  description: Dispositivo en red local
+  ip_address: 192.168.1.112
+  mac_address: 56:23:13:DC:40:D4
+  network: 192.168.1.0/24
+  interface: wlan0
+status: operational
+relations:
+- type: connected_to
+  target: network-192-168-1-0
+criticality:
+  business: low
+  operational: low
+  technical: low

@@ -1,0 +1,18 @@
+schema_version: 1
+id: device-101
+kind: endpoint
+metadata:
+  name: Device 101
+  description: Dispositivo en red local
+  ip_address: 192.168.1.101
+  mac_address: 90:FB:5D:6B:46:B4
+  network: 192.168.1.0/24
+  interface: wlan0
+status: operational
+relations:
+- type: connected_to
+  target: network-192-168-1-0
+criticality:
+  business: low
+  operational: low
+  technical: low

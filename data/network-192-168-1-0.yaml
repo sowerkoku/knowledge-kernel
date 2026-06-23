@@ -1,0 +1,12 @@
+schema_version: 1
+id: network-192-168-1-0
+kind: network
+metadata:
+  name: Red Local 192.168.1.0/24
+  description: Red LAN del hogar - wlan0
+  cidr: 192.168.1.0/24
+  gateway: 192.168.1.1
+  dns: 192.168.1.1
+  interface: wlan0
+status: operational
+relations: []

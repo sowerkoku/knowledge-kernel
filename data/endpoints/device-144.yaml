@@ -1,0 +1,18 @@
+schema_version: 1
+id: device-144
+kind: endpoint
+metadata:
+  name: Device 144
+  description: Dispositivo en red local
+  ip_address: 192.168.1.144
+  mac_address: 7A:7F:AB:A8:6F:92
+  network: 192.168.1.0/24
+  interface: wlan0
+status: operational
+relations:
+- type: connected_to
+  target: network-192-168-1-0
+criticality:
+  business: low
+  operational: low
+  technical: low
