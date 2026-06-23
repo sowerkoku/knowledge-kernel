@@ -23,6 +23,7 @@ from .models import (
     QueryContext,
     CMDBResult,
     ConfidenceLevel,
+    EvidenceBasis,
     SourceType,
 )
 
@@ -247,15 +248,20 @@ def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> CMDBResult:
     is_validated = entity.get("schema_version") == 1
     confidence_level = ConfidenceLevel.HIGH if is_validated else ConfidenceLevel.MEDIUM
     confidence_reasons = []
+    confidence_basis = []
     
     if is_validated:
         confidence_reasons.append("yaml_validated_schema_v1")
+        confidence_basis.append(EvidenceBasis.SCHEMA_VALIDATED)
+        confidence_basis.append(EvidenceBasis.HUMAN_DECLARED)
     else:
         schema_ver = entity.get("schema_version")
         if schema_ver:
             confidence_reasons.append(f"schema_v{schema_ver}")
+            confidence_basis.append(EvidenceBasis.SCHEMA_VALIDATED)
         else:
             confidence_reasons.append("no_schema_version")
+        confidence_basis.append(EvidenceBasis.HUMAN_DECLARED)
     
     if entity.get("status"):
         confidence_reasons.append("status_declared")
@@ -271,7 +277,7 @@ def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> CMDBResult:
         validated=is_validated,
         entity_hash=entity_hash,
         confidence_level=confidence_level,
-        confidence_reasons=confidence_reasons,
+        confidence_basis=confidence_basis,
     )
     
     return CMDBResult(

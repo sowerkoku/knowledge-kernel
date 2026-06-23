@@ -11,13 +11,14 @@ Modules:
 """
 
 from .entity import Entity
-from .evidence import Evidence, SourceType, ConfidenceLevel
+from .evidence import Evidence, SourceType, ConfidenceLevel, EvidenceBasis
 from .context import QueryContext
 from .result import CMDBResult
 
 __all__ = [
     "Entity",
     "Evidence",
+    "EvidenceBasis",
     "SourceType",
     "ConfidenceLevel",
     "QueryContext",
