@@ -23,6 +23,7 @@ from .models import (
     QueryContext,
     CMDBResult,
     ConfidenceLevel,
+    SourceType,
 )
 
 
@@ -263,8 +264,9 @@ def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> CMDBResult:
         confidence_reasons.append("relations_defined")
     
     evidence = Evidence(
+        source_type=SourceType.DECLARED,
         source_file=str(entity_file),
-        source_type="cmdb_yaml",
+        source_type_label="cmdb_yaml",
         schema_version=entity.get("schema_version"),
         validated=is_validated,
         entity_hash=entity_hash,
