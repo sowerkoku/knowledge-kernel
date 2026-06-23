@@ -78,12 +78,25 @@ Grounded Response
 ### Installation
 
 ```bash
+# Clone repository
 git clone https://github.com/sowerkoku/agent-cmdb.git
 cd agent-cmdb
+
+# Create virtual environment (required on Debian/Ubuntu)
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install package
 pip install -e .
 ```
 
-### Basic Usage
+**Verify installation:**
+
+```bash
+python -c "from cmdb import cmdb_get; print('✓ Agent-CMDB installed')"
+```
+
+### Usage
 
 ```python
 from cmdb import cmdb_exists, cmdb_get, cmdb_impact
@@ -93,7 +106,7 @@ if cmdb_exists("ollama").exists:
     print("✓ Ollama exists in CMDB")
 else:
     print("✗ Ollama not found — cannot verify this claim")
-
+```
 # 2. Get entity with full evidence
 result = cmdb_get("ollama")
 print(f"Ollama is {result.entity.kind}")
