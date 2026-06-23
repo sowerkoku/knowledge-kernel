@@ -17,6 +17,8 @@ authors = [
 maintainers = [
     {name = "Carlos Caceres", email = "car.caceresa@gmail.com"}
 ]
+
+keywords = [
     "cmdb",
     "infrastructure",
     "agents",
