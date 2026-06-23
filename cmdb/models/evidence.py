@@ -203,4 +203,8 @@ class Evidence:
             "entity_hash": self.entity_hash,
             "confidence_level": self.confidence_level.value,
             "confidence_reasons": self.confidence_reasons,
+            # Temporal fields (critical for agent reasoning)
+            "observed_at": self.observed_at,
+            "expires_at": self.expires_at,
+            "ttl_seconds": self.ttl_seconds,
         }
