@@ -7,6 +7,10 @@ from .validator import (
     load_entities_with_paths,
 )
 
+from .impact import (
+    cmdb_impact,
+)
+
 from .query import (
     cmdb_exists,
     cmdb_get,
@@ -21,11 +25,12 @@ from .migrator import (
 
 __all__ = [
     # Query API (agent-facing)
-    "cmdb_exists",   # NEW: Check existence before asserting
-    "cmdb_get",
-    "cmdb_search",
-    "cmdb_list",
-    "cmdb_validate",
+    "cmdb_exists",   # Check existence before asserting
+    "cmdb_get",      # Get entity with facts + relations
+    "cmdb_search",   # Search entities
+    "cmdb_list",     # List by kind/status
+    "cmdb_impact",   # Impact analysis (NEW)
+    "cmdb_validate", # Validate CMDB health
     
     # Migration
     "cmdb_migrate_dry_run",
