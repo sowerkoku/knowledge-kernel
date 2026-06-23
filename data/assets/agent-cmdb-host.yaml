@@ -1,9 +1,0 @@
-schema_version: 1
-id: agent-cmdb-host
-kind: asset
-metadata:
-  name: Agent-CMDB Host
-  description: Host donde reside el CMDB interno de la skill
-  hostname: agent-cmdb
-status: operational
-relations: []
