@@ -23,18 +23,29 @@ from .migrator import (
     cmdb_migrate_apply,
 )
 
+from .assertions import (
+    cmdb_assert,
+    cmdb_context,
+)
+
 __all__ = [
     # Query API (agent-facing)
     "cmdb_exists",   # Check existence before asserting
-    "cmdb_get",      # Get entity with facts + relations
+    "cmdb_get",      # Get entity with facts + evidence
     "cmdb_search",   # Search entities
     "cmdb_list",     # List by kind/status
-    "cmdb_impact",   # Impact analysis (NEW)
-    "cmdb_validate", # Validate CMDB health
+    "cmdb_assert",   # Binary validation for reasoning
+    "cmdb_context",  # Pre-packaged agent context
+    
+    # Impact analysis
+    "cmdb_impact",   # Dependency graph analysis
     
     # Migration
     "cmdb_migrate_dry_run",
     "cmdb_migrate_apply",
+    
+    # Validation
+    "cmdb_validate",
     
     # Low-level utilities
     "load_entities",
