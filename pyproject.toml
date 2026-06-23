@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-cmdb"
-version = "1.0.0-draft"
+version = "1.0.0.dev1"
 description = "A factual grounding layer that helps AI agents query verified reality before reasoning or acting."
 readme = "README.md"
 license = {text = "MIT"}
