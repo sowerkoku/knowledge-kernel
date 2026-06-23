@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+"""
+Agent-CMDB CLI — Query factual infrastructure memory
+
+Usage:
+    cmdb exists <entity_id>     Check if entity exists
+    cmdb get <entity_id>        Get full entity details
+    cmdb search <query>         Search entities
+    cmdb impact <entity_id>     Analyze impact
+    cmdb list [kind]            List entities by kind
+
+Examples:
+    cmdb exists ollama
+    cmdb get mysql
+    cmdb search telegram
+    cmdb impact ollama
+    cmdb list software
+"""
+
+import sys
+import json
+from pathlib import Path
+
+# Add parent to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from cmdb import cmdb_exists, cmdb_get, cmdb_search, cmdb_impact, cmdb_list
+
+
+ENTITIES_DIR = Path("/home/carlos/registry")
+
+
+def cmd_exists(entity_id: str):
+    """Check if entity exists."""
+    result = cmdb_exists(entity_id, ENTITIES_DIR)
+    
+    if result["exists"]:
+        print(f"✓ Entity '{entity_id}' EXISTS in CMDB")
+        print(f"  kind: {result.get('kind')}")
+        print(f"  status: {result.get('status')}")
+        print(f"  confidence: {result['confidence']}")
+    else:
+        print(f"✗ Entity '{entity_id}' NOT FOUND in CMDB")
+        print(f"  reason: {result.get('reason')}")
+        if result.get("similar_entities"):
+            print(f"  similar: {', '.join(result['similar_entities'])}")
+    
+    # Exit code for scripting
+    return 0 if result["exists"] else 1
+
+
+def cmd_get(entity_id: str):
+    """Get full entity details."""
+    result = cmdb_get(entity_id, ENTITIES_DIR)
+    
+    if not result["exists"]:
+        print(f"✗ Entity '{entity_id}' NOT FOUND")
+        print(f"  {result.get('reason')}")
+        return 1
+    
+    print(f"Entity: {result['entity']['id']}")
+    print(f"Kind: {result['entity']['kind']}")
+    print(f"Status: {result['entity']['status']}")
+    
+    print(f"\nFacts:")
+    for fact in result["facts"]:
+        print(f"  • {fact}")
+    
+    print(f"\nRelations:")
+    for rel_type, targets in result["relations"].items():
+        print(f"  {rel_type}: {', '.join(targets)}")
+    
+    if result.get("criticality"):
+        crit = result["criticality"]
+        print(f"\nCriticality: {crit.get('derived_classification')}")
+        print(f"  business: {crit.get('business')}")
+        print(f"  operational: {crit.get('operational')}")
+        print(f"  technical: {crit.get('technical')}")
+    
+    prov = result["provenance"]
+    print(f"\nProvenance:")
+    print(f"  source: {prov['source_file']}")
+    print(f"  validated: {prov['validated']} (schema v{prov['schema_version']})")
+    print(f"  hash: {prov['entity_hash']}")
+    
+    conf = result["confidence"]
+    print(f"\nConfidence:")
+    print(f"  level: {conf['level']}")
+    print(f"  reasons: {', '.join(conf['reason'])}")
+    
+    return 0
+
+
+def cmd_search(query: str):
+    """Search entities."""
+    results = cmdb_search(query, ENTITIES_DIR)
+    
+    if not results:
+        print(f"No entities found for '{query}'")
+        return 1
+    
+    print(f"Found {len(results)} entities matching '{query}':\n")
+    
+    for i, r in enumerate(results[:10], 1):
+        match_field = r.get("match_field", "unknown")
+        score = r.get("score", 0)
+        print(f"{i}. {r['id']} ({r['kind']})")
+        print(f"   matched: {match_field} (score: {score:.2f})")
+        if r.get("metadata", {}).get("name"):
+            print(f"   name: {r['metadata']['name']}")
+        print()
+    
+    return 0
+
+
+def cmd_impact(entity_id: str):
+    """Analyze impact."""
+    result = cmdb_impact(entity_id, ENTITIES_DIR)
+    
+    if not result["exists"]:
+        print(f"✗ Entity '{entity_id}' NOT FOUND")
+        return 1
+    
+    print(f"Impact Analysis: {entity_id}\n")
+    
+    # Depends on me
+    deps = result["depends_on_me"]
+    total_direct = len(deps["direct"])
+    total_trans = len(deps["transitive"])
+    
+    print(f"Depends ON {entity_id} (will be affected if it fails):")
+    print(f"  Direct: {total_direct}")
+    for d in deps["direct"]:
+        print(f"    • {d['id']} ({d['kind']}) via {d['relation']}")
+    
+    if total_trans:
+        print(f"  Transitive: {total_trans}")
+        for t in deps["transitive"][:5]:
+            path_str = " → ".join(t["path"])
+            print(f"    • {t['id']} via {path_str}")
+    
+    # Affected layers
+    print(f"\nAffected Layers:")
+    for layer, entities in result["affected_layers"].items():
+        if entities:
+            print(f"  {layer}: {', '.join(entities)}")
+    
+    # Risk indicators
+    risk = result["risk_indicators"]
+    print(f"\nRisk Indicators (Factual):")
+    print(f"  Total dependents: {risk['total_dependents']}")
+    print(f"  Critical dependents: {len(risk['critical_dependents'])}")
+    for c in risk["critical_dependents"]:
+        print(f"    • {c['id']} (business: {c['criticality'].get('business')})")
+    print(f"  Redundancy found: {risk['redundancy_found']}")
+    print(f"  Single point of failure: {risk['single_point_of_failure']}")
+    
+    return 0
+
+
+def cmd_list(kind: str = None):
+    """List entities."""
+    entities = cmdb_list(kind=kind, entities_dir=ENTITIES_DIR)
+    
+    if not entities:
+        print("No entities found")
+        return 1
+    
+    print(f"Entities ({len(entities)}):")
+    if kind:
+        print(f"  Filter: kind={kind}")
+    print()
+    
+    for e in entities[:20]:
+        print(f"  {e['id']} ({e['kind']}) — {e['metadata'].get('name', 'no name')} ({e['status']})")
+    
+    if len(entities) > 20:
+        print(f"  ... and {len(entities) - 20} more")
+    
+    return 0
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(1)
+    
+    cmd = sys.argv[1]
+    
+    if cmd == "exists":
+        if len(sys.argv) < 3:
+            print("Usage: cmdb exists <entity_id>")
+            sys.exit(1)
+        sys.exit(cmd_exists(sys.argv[2]))
+    
+    elif cmd == "get":
+        if len(sys.argv) < 3:
+            print("Usage: cmdb get <entity_id>")
+            sys.exit(1)
+        sys.exit(cmd_get(sys.argv[2]))
+    
+    elif cmd == "search":
+        if len(sys.argv) < 3:
+            print("Usage: cmdb search <query>")
+            sys.exit(1)
+        sys.exit(cmd_search(sys.argv[2]))
+    
+    elif cmd == "impact":
+        if len(sys.argv) < 3:
+            print("Usage: cmdb impact <entity_id>")
+            sys.exit(1)
+        sys.exit(cmd_impact(sys.argv[2]))
+    
+    elif cmd == "list":
+        kind = sys.argv[2] if len(sys.argv) > 2 else None
+        sys.exit(cmd_list(kind))
+    
+    else:
+        print(f"Unknown command: {cmd}")
+        print(__doc__)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

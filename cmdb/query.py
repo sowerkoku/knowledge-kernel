@@ -14,11 +14,95 @@ Design principles:
 from typing import Optional, Union
 from pathlib import Path
 from datetime import datetime
+import json
 
-from .validator import load_entities, cmdb_validate
+from .validator import load_entities, load_entities_with_paths, cmdb_validate
+from .models import (
+    Entity,
+    Evidence,
+    QueryContext,
+    CMDBResult,
+    ConfidenceLevel,
+)
 
 
 DEFAULT_ENTITIES_DIR = Path("/home/carlos/registry")
+
+
+def _extract_facts(entity: dict) -> list[str]:
+    """Extract natural language facts from an entity."""
+    facts = []
+    metadata = entity.get("metadata", {})
+    
+    # Base fact
+    kind = entity.get("kind", "unknown")
+    entity_id = entity.get("id", "unknown")
+    facts.append(f"{kind.title()} entity: {entity_id}")
+    
+    # Status
+    if entity.get("status"):
+        facts.append(f"Status: {entity['status']}")
+    
+    # Metadata
+    if metadata.get("name"):
+        facts.append(f"Name: {metadata['name']}")
+    
+    if metadata.get("version"):
+        facts.append(f"Version: {metadata['version']}")
+    
+    if metadata.get("description"):
+        desc = metadata["description"]
+        if len(desc) > 100:
+            desc = desc[:100] + "..."
+        facts.append(f"Description: {desc}")
+    
+    return facts
+
+
+def _group_relations(entity: dict) -> dict:
+    """Group relations by type, including reverse relations."""
+    relations = {
+        "runs_on": [],
+        "uses": [],
+        "reads": [],
+        "writes": [],
+        "calls": [],
+        "owns": [],
+        "backs_up": [],
+        "monitors": [],
+    }
+    
+    for rel in entity.get("relations", []):
+        rel_type = rel.get("type")
+        rel_target = rel.get("target")
+        
+        if rel_type in relations:
+            relations[rel_type].append(rel_target)
+    
+    # Remove empty
+    return {k: v for k, v in relations.items() if v}
+
+
+def _derive_criticality(entity: dict) -> Optional[dict]:
+    """Derive criticality classification from entity data."""
+    criticality = entity.get("criticality", {})
+    
+    if not criticality:
+        return None
+    
+    derived = "MENOR"
+    biz = criticality.get("business", "low")
+    ops = criticality.get("operational", "low")
+    
+    if biz == "high" and ops == "high":
+        derived = "CRÍTICO"
+    elif biz == "high" or ops == "high":
+        derived = "IMPORTANTE"
+    
+    return {
+        **criticality,
+        "derived_classification": derived,
+    }
 
 
 def cmdb_exists(entity_id: str, entities_dir: Optional[Path] = None) -> dict:
@@ -109,182 +193,91 @@ def cmdb_exists(entity_id: str, entities_dir: Optional[Path] = None) -> dict:
         }
 
 
-def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> Optional[dict]:
+def _compute_entity_hash(entity: dict) -> str:
+    """Compute SHA256 hash of entity for change detection."""
+    import hashlib
+    # Serialize deterministically
+    serialized = json.dumps(entity, sort_keys=True)
+    return hashlib.sha256(serialized.encode()).hexdigest()[:16]
+
+
+def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> CMDBResult:
     """
     Get a single entity by ID with full context for agent reasoning.
     
-    **Agent usage:**
-    Use this when you need to verify specific facts about an entity.
-    Always check the returned structure before making claims.
-    
-    ```python
-    result = cmdb_get("ollama")
-    if result["exists"]:
-        print(f"Facts: {result['facts']}")
-        print(f"Relations: {result['relations']}")
-        print(f"Confidence: {result['confidence']}")
-    ```
-    
-    Args:
-        entity_id: The entity ID (e.g., "ollama", "server-53", "mysql")
-        entities_dir: Path to entities directory
-    
-    Returns:
-        Structured response with facts, relations, and confidence.
-        
-        Example:
-        ```python
-        {
-            "exists": True,
-            "entity": {
-                "id": "ollama",
-                "kind": "software",
-                "status": "operational",
-                "metadata": {...},
-            },
-            "facts": [
-                "Ollama is a software entity",
-                "Current status: operational",
-                "Version: 0.5"
-            ],
-            "relations": {
-                "runs_on": ["server-53"],
-                "uses": ["docker"],
-                "reads": [],
-                "writes": [],
-                "calls": [],
-                "owned_by": [],
-                "backs_up": [],
-                "monitors_by": []
-            },
-            "criticality": {
-                "business": "medium",
-                "operational": "high",
-                "technical": "low",
-                "derived_classification": "IMPORTANT"
-            },
-            "source": {
-                "type": "cmdb",
-                "file": "/home/carlos/registry/software/ollama.yaml",
-                "verified_at": "2026-06-22T19:45:00"
-            },
-            "confidence": "verified"
-        }
-        ```
-        
-        If entity not found:
-        ```python
-        {
-            "exists": False,
-            "entity_id": "redis",
-            "reason": "Entity not found in CMDB",
-            "similar_entities": ["ollama", "mysql"],
-            "confidence": "verified_absence"
-        }
-        ```
+    Returns CMDBResult with separated:
+    - entity: declared reality
+    - evidence: why we trust it
+    - context: when queried
     """
     entities_dir = entities_dir or DEFAULT_ENTITIES_DIR
     entities, paths = load_entities_with_paths(entities_dir)
     
+    # Query context (query-time metadata)
+    context = QueryContext(
+        entities_dir=str(entities_dir) if entities_dir else None,
+    )
+    
     if entity_id not in entities:
-        # Entity not found — return structured absence
-        similar = []
-        query_lower = entity_id.lower()
-        for eid in entities.keys():
-            if query_lower in eid.lower():
-                similar.append(eid)
-        
-        return {
-            "exists": False,
-            "entity_id": entity_id,
-            "reason": "Entity not found in CMDB",
-            "similar_entities": similar[:5],
-            "confidence": "verified_absence",
-        }
+        similar = [eid for eid in entities.keys() if entity_id.lower() in eid.lower()][:5]
+        return CMDBResult(
+            exists=False,
+            entity_id=entity_id,
+            reason="Entity not found in CMDB",
+            similar_entities=similar,
+            context=context,
+        )
     
     entity = entities[entity_id]
     entity_file = paths.get(entity_id, "unknown")
     
-    # Extract facts from entity
-    facts = []
-    metadata = entity.get("metadata", {})
+    # Build Entity object
+    entity_obj = Entity(
+        id=entity_id,
+        kind=entity.get("kind", "unknown"),
+        status=entity.get("status"),
+        metadata=entity.get("metadata", {}),
+    )
     
-    facts.append(f"{entity.get('kind', 'unknown').title()} entity: {entity_id}")
+    # Compute hash
+    entity_hash = _compute_entity_hash(entity)
+    
+    # Build Evidence object
+    is_validated = entity.get("schema_version") == 1
+    confidence_level = ConfidenceLevel.VERIFIED if is_validated else ConfidenceLevel.DECLARED
+    confidence_reasons = []
+    
+    if is_validated:
+        confidence_reasons.append("yaml_validated_schema_v1")
+    else:
+        schema_ver = entity.get("schema_version")
+        if schema_ver:
+            confidence_reasons.append(f"schema_v{schema_ver}")
+        else:
+            confidence_reasons.append("no_schema_version")
     
     if entity.get("status"):
-        facts.append(f"Status: {entity['status']}")
+        confidence_reasons.append("status_declared")
     
-    if metadata.get("name"):
-        facts.append(f"Name: {metadata['name']}")
+    if entity.get("relations"):
+        confidence_reasons.append("relations_defined")
     
-    if metadata.get("version"):
-        facts.append(f"Version: {metadata['version']}")
+    evidence = Evidence(
+        source_file=str(entity_file),
+        source_type="cmdb_yaml",
+        schema_version=entity.get("schema_version"),
+        validated=is_validated,
+        entity_hash=entity_hash,
+        confidence_level=confidence_level,
+        confidence_reasons=confidence_reasons,
+    )
     
-    if metadata.get("description"):
-        facts.append(f"Description: {metadata['description'][:100]}...")
-    
-    # Group relations by type
-    relations = {
-        "runs_on": [],
-        "uses": [],
-        "reads": [],
-        "writes": [],
-        "calls": [],
-        "owns": [],
-        "owns_by": [],
-        "backs_up": [],
-        "monitors": [],
-        "monitors_by": [],
-    }
-    
-    for rel in entity.get("relations", []):
-        rel_type = rel.get("type")
-        rel_target = rel.get("target")
-        
-        if rel_type in relations:
-            relations[rel_type].append(rel_target)
-        
-        # Reverse relations
-        if rel_type == "owns" and rel_target == entity_id:
-            relations["owns_by"].append(rel.get("source"))
-        if rel_type == "monitors" and rel_target == entity_id:
-            relations["monitors_by"].append(rel.get("source"))
-    
-    # Remove empty relation types
-    relations = {k: v for k, v in relations.items() if v}
-    
-    # Derive criticality classification
-    criticality = entity.get("criticality", {})
-    derived_class = "MENOR"
-    if criticality:
-        biz = criticality.get("business", "low")
-        ops = criticality.get("operational", "low")
-        if biz == "high" and ops == "high":
-            derived_class = "CRÍTICO"
-        elif biz == "high" or ops == "high":
-            derived_class = "IMPORTANTE"
-    
-    return {
-        "exists": True,
-        "entity": {
-            "id": entity_id,
-            "kind": entity.get("kind"),
-            "status": entity.get("status"),
-            "metadata": metadata,
-        },
-        "facts": facts,
-        "relations": relations,
-        "criticality": {
-            **criticality,
-            "derived_classification": derived_class,
-        } if criticality else None,
-        "source": {
-            "type": "cmdb",
-            "file": str(entity_file),
-            "verified_at": datetime.now().isoformat(),
-        },
-        "confidence": "verified",
-    }
+    return CMDBResult(
+        exists=True,
+        entity=entity_obj,
+        evidence=evidence,
+        context=context,
+    )
 
 
 def cmdb_search(query: str, entities_dir: Optional[Path] = None) -> list[dict]:
