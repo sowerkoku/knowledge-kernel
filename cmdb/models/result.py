@@ -35,7 +35,7 @@ class CMDBResult:
             print(f"{result.entity.id} is {result.entity.kind}")
         
         # Check evidence quality
-        if result.evidence.confidence_level == ConfidenceLevel.VERIFIED:
+        if result.evidence.confidence_level == ConfidenceLevel.HIGH:
             # Safe to make strong claims
         else:
             # Express uncertainty

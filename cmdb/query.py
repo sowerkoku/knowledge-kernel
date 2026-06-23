@@ -245,7 +245,7 @@ def cmdb_get(entity_id: str, entities_dir: Optional[Path] = None) -> CMDBResult:
     
     # Build Evidence object
     is_validated = entity.get("schema_version") == 1
-    confidence_level = ConfidenceLevel.VERIFIED if is_validated else ConfidenceLevel.DECLARED
+    confidence_level = ConfidenceLevel.HIGH if is_validated else ConfidenceLevel.MEDIUM
     confidence_reasons = []
     
     if is_validated:
