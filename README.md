@@ -100,21 +100,27 @@ python -c "from cmdb import cmdb_get; print('✓ Agent-CMDB installed')"
 
 ```python
 from cmdb import cmdb_exists, cmdb_get, cmdb_impact
+```
 
 # 1. Check existence BEFORE making factual claims
+```
 if cmdb_exists("ollama").exists:
     print("✓ Ollama exists in CMDB")
 else:
     print("✗ Ollama not found — cannot verify this claim")
 ```
+
 # 2. Get entity with full evidence
+```
 result = cmdb_get("ollama")
 print(f"Ollama is {result.entity.kind}")
 print(f"Source: {result.evidence.source_file}")
 print(f"Confidence: {result.evidence.confidence_level}")
 print(f"Fresh until: {result.evidence.expires_at}")
+```
 
 # 3. Check impact BEFORE modifying
+```
 impact = cmdb_impact("ollama")
 print(f"{len(impact['depends_on_me']['direct'])} entities depend on Ollama")
 print(f"Single point of failure: {impact['risk_indicators']['single_point_of_failure']}")
