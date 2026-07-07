@@ -2,8 +2,20 @@
 
 **Una capa de memoria factual para agentes de IA.**
 
-Los agentes de IA no deberían depender de la memoria para conocer su entorno.
-Deberían consultar una representación verificada de la realidad antes de razonar o actuar.
+> "A factual knowledge layer for AI agents."
+
+---
+
+## Data Directory
+
+⚠️ **`data/` is a development/example dataset.** It is included for testing and demonstration.
+
+**Production users:** Set your own knowledge dataset via:
+```bash
+export CMDB_DATA_DIR=~/knowledge/agent-cmdb
+```
+
+The tool is reusable — you bring your own dataset.
 
 ---
 
@@ -99,7 +111,20 @@ python -c "from cmdb import cmdb_get; print('✓ Agent-CMDB installed')"
 ### Usage
 
 ```python
-from cmdb import cmdb_exists, cmdb_get, cmdb_impact
+from cmdb.api import cmdb_exists, cmdb_get, cmdb_impact
+```
+
+### Configuration
+
+```bash
+# Set your knowledge dataset location (default: ~/.local/share/agent-cmdb)
+export CMDB_DATA_DIR=~/knowledge/agent-cmdb
+```
+
+Or in Python:
+```python
+import os
+os.environ["CMDB_DATA_DIR"] = "~/knowledge/agent-cmdb"
 ```
 
 # 1. Check existence BEFORE making factual claims
