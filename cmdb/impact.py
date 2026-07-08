@@ -27,9 +27,12 @@ def get_default_entities_dir() -> Path:
 DEFAULT_ENTITIES_DIR = get_default_entities_dir()
 
 # Relation types that create dependencies (X depends on Y)
-DEPENDENCY_RELATIONS = {"uses", "reads", "writes", "runs_on", "calls"}
+# Forward: software --exposes--> endpoint, software --runs_on--> asset
+# Reverse (computed): endpoint --exposed_by--> software, asset hosts software
+DEPENDENCY_RELATIONS = {"uses", "reads", "writes", "runs_on", "calls", "exposes", "exposed_by"}
 
-# Relation types that indicate reverse dependency (Y is used by X)
+# These relations are computed inverses (not stored in YAML, derived at query time)
+# kept as documentation reference only — not used in _find_dependents
 REVERSE_DEPENDENCY_RELATIONS = {"owns", "monitors", "backs_up"}
 
 
