@@ -203,6 +203,36 @@ This is what makes the Kernel trustworthy: multiple agents querying the same fac
 
 ---
 
+## 9. Why Not RAG or Memory?
+
+These are the most common misconceptions. The tables below are canonical.
+
+### Why not RAG?
+
+| RAG | agent-cmdb |
+|-----|-----------|
+| Similarity search | Deterministic lookup |
+| Documents | Facts |
+| Probabilistic retrieval | Exact retrieval |
+| Chunk embeddings | Structured entities |
+| Agent-specific context | Shared factual substrate |
+
+RAG finds *similar documents*. The Kernel answers *"Does this fact exist?"* and *"What depends on it?"*.
+
+### Why not Agent Memory?
+
+| Agent Memory | agent-cmdb |
+|--------------|-----------|
+| Experiences | Facts |
+| Conversations | Verified knowledge |
+| Subjective | Objective |
+| Personal | Shared across agents |
+| Mutable | Evidence-backed |
+
+Memory stores *what happened*. The Kernel stores *what is true*.
+
+---
+
 ## See also
 
 - [`README.md`](../README.md) — Project overview and quick start

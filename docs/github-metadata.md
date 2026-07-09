@@ -1,76 +1,114 @@
 # GitHub Repository Metadata
 
-## Description (copy/paste esto en About)
+## Tagline (one-liner)
 
 ```
-A deterministic factual substrate for AI agents.
+Deterministic factual grounding for AI agents.
 ```
 
-**Why this description:**
-- 45 characters — GitHub muestra ~120, deja espacio para contexto
-- "Deterministic factual substrate" comunica inmediatamente que no es una CMDB clásica ni una base de datos
-- "For AI agents" define la audiencia — no hay ambigüedad
-- No menciona CMDB, inventory, monitoring — las cosas que NO es
+## Description (copy/paste this in About — 160 chars)
+
+```
+Deterministic factual knowledge layer for AI agents. Store verified facts, evidence, relationships and freshness for grounding LLM reasoning.
+```
+
+**Contains the key search terms:**
+- AI agents
+- knowledge layer
+- verified facts
+- evidence
+- relationships
+- grounding
+- LLM reasoning
 
 ---
 
-## Topics (agregar estos 14 tags)
+## Topics (add these 14 tags)
 
 ```
-ai-agents agentic-ai grounding cmdb knowledge-graph dependency-graph agent-memory llm reasoning infrastructure facts hallucination-prevention factual-memory
+ai-agents agentic-ai grounding knowledge-base knowledge-graph
+agent-memory llm reasoning infrastructure facts deterministic-ai
+context-engineering knowledge-kernel structured-memory cmdb
 ```
 
-**Por qué estos topics:**
-- `ai-agents`, `agentic-ai` — Audiencia principal
-- `grounding`, `hallucination-prevention` — Problema que resuelve
-- `cmdb` — Implementación técnica (no el producto)
-- `knowledge-graph`, `dependency-graph` — Estructura de datos
-- `agent-memory`, `factual-memory` — Patrón de uso
-- `llm`, `reasoning` — Contexto de uso
-- `infrastructure`, `facts` — Dominio
+**Why these topics:**
+
+| Topic | Why |
+|-------|-----|
+| `ai-agents`, `agentic-ai` | Primary audience |
+| `grounding` | Core differentiator — deterministic grounding |
+| `knowledge-base` | What it provides (but structured, not documents) |
+| `knowledge-graph` | Entity-relationship model |
+| `agent-memory` | Related but distinct from agent memory |
+| `llm`, `reasoning` | Context of use |
+| `infrastructure`, `facts` | Domain |
+| `deterministic-ai` | Unique positioning — not probabilistic |
+| `context-engineering` | How agents use it |
+| `knowledge-kernel` | Project's own term |
+| `structured-memory` | Not vector-based memory |
+| `cmdb` | Technical implementation category |
 
 ---
 
-## Cómo actualizar (manual)
+## How to update (manual)
 
-1. Ir a: https://github.com/sowerkoku/agent-cmdb
-2. Click en ⚙️ (gear icon) junto a "About"
-3. Pegar descripción
-4. Agregar topics (uno por uno o copy/paste)
-5. Guardar
+1. Go to: https://github.com/sowerkoku/agent-cmdb
+2. Click ⚙️ (gear icon) next to "About"
+3. Paste the description
+4. Add topics (one by one or copy/paste)
+5. Save
 
 ---
 
-## Alternativa: Con GitHub CLI
-
-Si tienes `gh` instalado:
+## Alternative: With GitHub CLI
 
 ```bash
-# Descripción
-gh repo edit sowerkoku/agent-cmdb --description "A deterministic factual substrate for AI agents."
+# Description (160 chars)
+gh repo edit sowerkoku/agent-cmdb --description "Deterministic factual knowledge layer for AI agents. Store verified facts, evidence, relationships and freshness for grounding LLM reasoning."
 
 # Topics
-gh repo edit sowerkoku/agent-cmdb --topics "ai-agents,agentic-ai,grounding,cmdb,knowledge-graph,dependency-graph,agent-memory,llm,reasoning,infrastructure,facts,hallucination-prevention,factual-memory"
+gh repo edit sowerkoku/agent-cmdb --topics "ai-agents,agentic-ai,grounding,knowledge-base,knowledge-graph,agent-memory,llm,reasoning,infrastructure,facts,deterministic-ai,context-engineering,knowledge-kernel,structured-memory,cmdb"
 ```
 
 ---
 
-## Por qué esto importa
+## Why this matters
 
-La descripción corta aparece en:
-- Búsquedas de GitHub
-- Perfil del usuario
-- Previews de enlaces
-- Herramientas de IA que indexan repositorios
+The short description appears in:
+- GitHub search results
+- User profile
+- Link previews
+- AI tools that index repositories
 
-**Descripción vaga:**
+**Unclear description:**
 > "CMDB for AI agents"
 
-→ La gente piensa en NetBox, ServiceNow, inventario IT tradicional.
+→ People think: NetBox, ServiceNow, IT inventory.
 
-**Descripción precisa:**
-> "A deterministic factual substrate for AI agents."
+**Clear description:**
+> "Deterministic factual knowledge layer for AI agents. Store verified facts, evidence, relationships and freshness for grounding LLM reasoning."
 
-→ La gente entiende inmediatamente: no es inventario IT, es una capa factual determinista para agentes.
+→ People understand: shared factual layer → multiple agents → reason consistently from the same reality.
 
-El 80% del descubrimiento del proyecto depende de estas 7 palabras.
+---
+
+## Positioning Strategy
+
+**Do not compete in:**
+- CMDB (NetBox, ServiceNow)
+- RAG (vector databases, embeddings)
+- Memory (conversational, personal, mutable)
+
+**Own these two concepts:**
+
+> **Knowledge Kernel**
+> → A deterministic factual layer shared across agents
+
+> **Deterministic Grounding**
+> → Exact lookup, not probabilistic retrieval
+
+If someone arrives searching "memory for AI agents" or "grounding for AI agents", the README should make them think:
+
+> "This is not another memory or vector store. It is a shared factual layer that makes multiple agents reason from the same verifiable reality."
+
+That is the most differentiating value proposition agent-cmdb has today.

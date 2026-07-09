@@ -1,22 +1,26 @@
 # Agent-CMDB
 
-**A deterministic factual substrate for AI agents.**
+**Deterministic factual grounding for AI agents.**
+
+A shared knowledge kernel that stores verified facts, evidence, relationships, and freshness so multiple agents can reason consistently from the same verifiable reality.
 
 - **Facts** — verified entities, not inferred knowledge
-- **Evidence** — why we trust each fact
-- **Freshness** — when it was observed, when it expires
+- **Evidence** — why we trust each fact (source, confidence, observed_at)
+- **Freshness** — computed at query time, never stored
 - **Deterministic API** — same data, same time, same result
 
 ---
 
 ## The Problem
 
-LLMs mix facts with reasoning. When an LLM answers "Where does Ollama run?" it:
+**LLMs infer. Facts drift. Agents disagree.**
+
+When an LLM answers "Where does Ollama run?" it:
 - Infers from training data — often wrong
 - Cannot verify whether its answer is current
 - Does not share a single source of truth with other agents
 
-**Agents need a shared factual substrate they can query, not a model that guesses.**
+Agents need a shared deterministic factual layer they can query — not a model that guesses.
 
 ---
 
@@ -46,30 +50,31 @@ Only three things live here: **what exists**, **why we trust it**, and **when it
 
 ---
 
-## Six Principles
+## Why Not RAG?
 
-**1. The API is the product.**
-The dataset will change. The implementation will change. The public API must not break without a strong architectural reason. Stability enables independent evolution of all consumers.
+| RAG | agent-cmdb |
+|-----|-----------|
+| Similarity search | Deterministic lookup |
+| Documents | Facts |
+| Probabilistic retrieval | Exact retrieval |
+| Chunk embeddings | Structured entities |
+| Agent-specific context | Shared factual substrate |
 
-**2. The Kernel stays small.**
-It answers: *"Does this fact exist?"* and *"What depends on it?"*
-It does not store documentation, conversations, or inferred knowledge. That belongs to other systems.
+RAG finds *similar documents*. agent-cmdb answers *what exists and what depends on it*.
 
-**3. Metrics govern evolution.**
-Expand the Kernel when evidence demands it — not anticipation.
-Good: *"Fact Coverage is low in infrastructure."*
-Bad: *"We could add 50 more entities."*
+---
 
-**4. Facts ≠ Evidence ≠ Reasoning.**
-- **Facts** — what exists (schema-validated)
-- **Evidence** — why we trust it (source, confidence, observed_at)
-- **Reasoning** — what the LLM decides (outside the Kernel)
+## Why Not Agent Memory?
 
-**5. Freshness is computed, never stored.**
-The Kernel records `observed_at`. It derives freshness at query time from domain TTLs. No stale values.
+| Agent Memory | agent-cmdb |
+|--------------|-----------|
+| Experiences | Facts |
+| Conversations | Verified knowledge |
+| Subjective | Objective |
+| Personal | Shared across agents |
+| Mutable | Evidence-backed |
 
-**6. Every assertion requires evidence.**
-If a fact is not backed by the Kernel, the agent must say so — not infer.
+Memory stores *what happened*. The Kernel stores *what is true*.
 
 ---
 
@@ -158,7 +163,7 @@ evidence.confidence_basis = [SCHEMA_VALIDATED, HUMAN_DECLARED]
 LLM Reasoning
   │
   ▼
-"Ollama runs on orange-pi-54"
+"Ollama runs on orange-pi-54 (verified, HIGH confidence)"
 ```
 
 **User:** "What happens if port 11434 fails?"
@@ -177,6 +182,30 @@ SPOF: True
   ▼
 "Closing port 11434 removes Ollama → OpenWebUI loses its LLM backend"
 ```
+
+---
+
+## Six Principles
+
+**1. The API is the product.**
+The dataset will change. The implementation will change. The public API must not break without a strong architectural reason.
+
+**2. The Kernel stays small.**
+It answers: *"Does this fact exist?"* and *"What depends on it?"* — nothing more.
+
+**3. Metrics govern evolution.**
+Expand when evidence demands it — not anticipation. Example: *"Fact Coverage is low in infrastructure"* → expand infrastructure.
+
+**4. Facts ≠ Evidence ≠ Reasoning.**
+- **Facts** — what exists (schema-validated)
+- **Evidence** — why we trust it (source, confidence, observed_at)
+- **Reasoning** — what the LLM decides (outside the Kernel)
+
+**5. Freshness is computed, never stored.**
+The Kernel records `observed_at`. It derives freshness at query time from domain TTLs. No stale values.
+
+**6. Every assertion requires evidence.**
+If a fact is not in the Kernel, the agent must say so — not infer.
 
 ---
 
@@ -199,24 +228,16 @@ Code and data are permanently separated. Updating the package never touches the 
 
 ---
 
-## Philosophy
-
-> *"It does not reason, infer, or decide."*
-
-This is the identity of the Kernel. It is not a smart system. It is a trustworthy one. The Kernel provides inputs so agents can reason — it does not reason for them.
-
----
-
 ## What Agent-CMDB Is NOT
 
 | Not | Because |
 |-----|---------|
-| IT inventory | Not for human browsing; for agent grounding |
+| RAG / Vector DB | Does not search similar documents — answers exact factual questions |
+| Agent Memory | Does not store conversations or experiences |
+| IT Inventory | Not for human browsing; for agent grounding |
 | Monitoring | No real-time metrics |
 | Automation | Does not execute actions |
-| LLM memory | No conversational history |
-| Knowledge base | No documentation or narratives |
-| A CMDB | Not NetBox or ServiceNow — it is a deterministic factual substrate |
+| A CMDB | Not NetBox or ServiceNow — it is a deterministic factual grounding layer |
 
 ---
 
@@ -253,8 +274,8 @@ python3 -c "from cmdb.api import cmdb_get; print(cmdb_get('ollama').entity.runs_
 The documentation is organized in three levels of abstraction:
 
 ```
-README.md
- ├── philosophy.md       ← why it exists, principles, KPIs (FGR/Coverage/Freshness)
+README.md (this file)
+ ├── philosophy.md       ← why it exists, principles, KPIs
  └── architecture.md    ← how the pieces connect
 
  domain-model.md    ← what entities represent
