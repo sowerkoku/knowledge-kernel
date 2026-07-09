@@ -1,4 +1,4 @@
-# Usage Patterns — Agent-CMDB
+# Usage Patterns — knowledge-kernel
 
 **Purpose:** Validated query patterns. The SKILL.md has the minimal API reference.
 
@@ -28,13 +28,13 @@ Entity not found → "I cannot verify this — not in the Kernel"
 
 ## 2. Fact Grounding Pattern
 
-**❌ Before Agent-CMDB**
+**❌ Before knowledge-kernel**
 ```
 Agent: "I think Ollama runs on server-53"
 (Infers from training data — often wrong)
 ```
 
-**✅ With Agent-CMDB**
+**✅ With knowledge-kernel**
 ```python
 # Step 1: Verify
 fact = cmdb_get("ollama")

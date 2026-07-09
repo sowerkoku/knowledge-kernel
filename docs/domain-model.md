@@ -1,4 +1,4 @@
-# Domain Model — Agent-CMDB Knowledge Kernel
+# Domain Model — knowledge-kernel Knowledge Kernel
 
 **Version:** 1.2 (locked — 2026-07-07)
 **Status:** Factual contract — reflects production API

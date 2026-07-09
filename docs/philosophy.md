@@ -1,4 +1,4 @@
-# Philosophy — Agent-CMDB Knowledge Kernel
+# Philosophy — knowledge-kernel Knowledge Kernel
 
 **What principles govern the Kernel? Why is it designed this way?**
 
@@ -209,7 +209,7 @@ These are the most common misconceptions. The tables below are canonical.
 
 ### Why not RAG?
 
-| RAG | agent-cmdb |
+| RAG | knowledge-kernel |
 |-----|-----------|
 | Similarity search | Deterministic lookup |
 | Documents | Facts |
@@ -221,7 +221,7 @@ RAG finds *similar documents*. The Kernel answers *"Does this fact exist?"* and 
 
 ### Why not Agent Memory?
 
-| Agent Memory | agent-cmdb |
+| Agent Memory | knowledge-kernel |
 |--------------|-----------|
 | Experiences | Facts |
 | Conversations | Verified knowledge |

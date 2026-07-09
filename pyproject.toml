@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-cmdb"
-version = "1.0.1"
-description = "Factual memory layer for AI agents — grounded infrastructure knowledge"
+name = "knowledge-kernel"
+version = "1.2.0"
+description = "Deterministic grounding layer and shared source of truth for AI agents. Store verified facts, evidence, relationships and freshness."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Carlos Cáceres", email = "car.caceresa@gmail.com"}]

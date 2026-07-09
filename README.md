@@ -1,8 +1,8 @@
-# Agent-CMDB
+# knowledge-kernel
 
-**Deterministic factual grounding for AI agents.**
+**Deterministic grounding layer and shared source of truth for AI agents.**
 
-A Knowledge Kernel — a shared source of truth that stores verified facts, evidence, relationships, and freshness so multiple agents can reason consistently from the same verifiable reality.
+knowledge-kernel is a Knowledge Kernel that stores verified facts, evidence, relationships, and freshness so multiple agents can reason consistently from the same verifiable reality.
 
 - **Facts** — verified entities, not inferred knowledge
 - **Evidence** — why we trust each fact (source, confidence, observed_at)
@@ -52,7 +52,7 @@ Only three things live here: **what exists**, **why we trust it**, and **when it
 
 ## Why Not RAG?
 
-| RAG | agent-cmdb |
+| RAG | knowledge-kernel |
 |-----|-----------|
 | Similarity search | Deterministic lookup |
 | Documents | Facts |
@@ -60,13 +60,13 @@ Only three things live here: **what exists**, **why we trust it**, and **when it
 | Chunk embeddings | Structured entities |
 | Agent-specific context | Shared factual substrate |
 
-RAG finds *similar documents*. agent-cmdb answers *what exists and what depends on it*.
+RAG finds *similar documents*. knowledge-kernel answers *what exists and what depends on it*.
 
 ---
 
 ## Why Not Agent Memory?
 
-| Agent Memory | agent-cmdb |
+| Agent Memory | knowledge-kernel |
 |--------------|-----------|
 | Experiences | Facts |
 | Conversations | Verified knowledge |
@@ -212,10 +212,10 @@ If a fact is not in the Kernel, the agent must say so — not infer.
 ## Architecture
 
 ```
-Repository (~/agent-cmdb/)      ← pip-installable code, versioned in git
+Repository (~/knowledge-kernel/)      ← pip-installable code, versioned in git
          │
          ▼ pip install -e
-Hermes Skill (agent-cmdb/)      ← SKILL.md = contract between agent and Kernel
+Hermes Skill (knowledge-kernel)      ← SKILL.md = contract between agent and Kernel
          │
          ▼ CMDB_DATA_DIR
 Knowledge Dataset               ← YAML entities: Asset / Software / Endpoint
@@ -243,7 +243,7 @@ Code and data are permanently separated. Updating the package never touches the 
 
 ## When to Use Agent-CMDB
 
-**Use agent-cmdb when:**
+**Use knowledge-kernel when:**
 
 ✓ Multiple agents need the same facts
 ✓ Facts must be evidence-backed
@@ -251,7 +251,7 @@ Code and data are permanently separated. Updating the package never touches the 
 ✓ Deterministic retrieval is more important than semantic search
 ✓ You need a shared source of truth across agents
 
-**Don't use agent-cmdb when:**
+**Do not use knowledge-kernel when:**
 
 ✗ You need document retrieval → use a vector database
 ✗ You need conversational memory → use agent memory
@@ -273,13 +273,13 @@ Future →  Runtime Discovery skill (SSH → evidence → proposal → human app
 ## Quick Start
 
 ```bash
-git clone https://github.com/sowerkoku/agent-cmdb.git
-cd agent-cmdb
+git clone https://github.com/sowerkoku/knowledge-kernel.git
+cd knowledge-kernel
 
 # Use Hermes venv, not system Python
 ~/.hermes/hermes-agent/venv/bin/python3 -m pip install -e .
 
-export CMDB_DATA_DIR=~/knowledge/agent-cmdb
+export CMDB_DATA_DIR=~/knowledge/knowledge-kernel
 
 # Verify
 python3 -c "from cmdb.api import cmdb_get; print(cmdb_get('ollama').entity.runs_on)"

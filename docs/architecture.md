@@ -1,4 +1,4 @@
-# Architecture — Agent-CMDB Knowledge Kernel
+# Architecture — knowledge-kernel Knowledge Kernel
 
 **How do the pieces connect? Where does everything live?**
 

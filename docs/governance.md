@@ -1,4 +1,4 @@
-# Governance — Agent-CMDB Knowledge Kernel
+# Governance — knowledge-kernel Knowledge Kernel
 
 **Purpose:** Rules for what enters the Kernel, what does not, and how the Kernel evolves.
 

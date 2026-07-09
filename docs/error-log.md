@@ -1,4 +1,4 @@
-# Failure Modes — Agent-CMDB
+# Failure Modes — knowledge-kernel
 
 **Purpose:** Document recurring failure patterns and their corrections. This is not a log — it is a catalog.
 
@@ -283,7 +283,7 @@ relations:
 **Correction:**
 ```bash
 # Always run before commit
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_validate
 v = cmdb_validate()
 assert v['valid'], f'Validation failed: {v[\"errors\"]}'

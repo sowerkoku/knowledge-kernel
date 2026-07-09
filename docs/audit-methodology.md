@@ -1,4 +1,4 @@
-# Audit Methodology — Agent-CMDB Knowledge Kernel
+# Audit Methodology — knowledge-kernel Knowledge Kernel
 
 **Purpose:** How to audit the Kernel — validate integrity, measure coverage, detect staleness.
 
@@ -11,7 +11,7 @@
 Always start here. This is the Kernel's self-check:
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_validate
 v = cmdb_validate()
 print(f'Valid: {v[\"valid\"]}')
@@ -36,7 +36,7 @@ if v['warnings']: print(f'Warnings: {len(v[\"warnings\"])}')
 Check for broken relations — relations that point to non-existent entities:
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list, cmdb_validate
 
 # Check each entity's relations
@@ -57,7 +57,7 @@ for e in cmdb_list():
 Which entities have evidence older than their domain TTL?
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list, cmdb_get
 from datetime import datetime, timezone
 
@@ -85,7 +85,7 @@ Can the Kernel answer the key operational questions?
 | "What does X depend on?" | `cmdb_impact(X)` with `depends_on` |
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list, cmdb_get
 
 # Check: all software should have runs_on
@@ -117,7 +117,7 @@ for a in assets:
 Endpoints should have host/port/protocol in metadata:
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list
 
 for e in cmdb_list(kind='endpoint'):
@@ -135,7 +135,7 @@ for e in cmdb_list(kind='endpoint'):
 Verify the impact graph is connected — no orphaned clusters:
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list, cmdb_impact
 
 # Every entity should appear in at least one impact chain
@@ -168,7 +168,7 @@ Check that all HIGH-criticality entities have:
 - At least one way to recover (backup, redundancy)
 
 ```bash
-CMDB_DATA_DIR=~/knowledge/agent-cmdb python3 -c "
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel python3 -c "
 from cmdb.api import cmdb_list, cmdb_get
 
 for e in cmdb_list():

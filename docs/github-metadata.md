@@ -50,7 +50,7 @@ context-engineering knowledge-kernel structured-memory cmdb
 
 ## How to update (manual)
 
-1. Go to: https://github.com/sowerkoku/agent-cmdb
+1. Go to: https://github.com/sowerkoku/knowledge-kernel
 2. Click ⚙️ (gear icon) next to "About"
 3. Paste the description
 4. Add topics (one by one or copy/paste)
@@ -62,10 +62,10 @@ context-engineering knowledge-kernel structured-memory cmdb
 
 ```bash
 # Description (160 chars)
-gh repo edit sowerkoku/agent-cmdb --description "Deterministic grounding layer and shared source of truth for AI agents. Store verified facts, evidence, relationships and freshness."
+gh repo edit sowerkoku/knowledge-kernel --description "Deterministic grounding layer and shared source of truth for AI agents. Store verified facts, evidence, relationships and freshness."
 
 # Topics
-gh repo edit sowerkoku/agent-cmdb --topics "ai-agents,agentic-ai,grounding,knowledge-base,knowledge-graph,agent-memory,llm,reasoning,infrastructure,facts,deterministic-ai,context-engineering,knowledge-kernel,structured-memory,cmdb"
+gh repo edit sowerkoku/knowledge-kernel --topics "ai-agents,agentic-ai,grounding,knowledge-base,knowledge-graph,agent-memory,llm,reasoning,infrastructure,facts,deterministic-ai,context-engineering,knowledge-kernel,structured-memory,cmdb"
 ```
 
 ---
@@ -109,4 +109,4 @@ If someone arrives searching "memory for AI agents" or "grounding for AI agents"
 
 > "This is not another memory or vector store. It is a shared factual layer that makes multiple agents reason from the same verifiable reality."
 
-That is the most differentiating value proposition agent-cmdb has today.
+That is the most differentiating value proposition knowledge-kernel has today.

@@ -1,4 +1,4 @@
-# Schema v1 — Agent-CMDB Entity Specification
+# Schema v1 — knowledge-kernel Entity Specification
 
 **Status:** Stable (v1.2)
 **Compatibility:** Schema is frozen. Dataset may grow; format does not change.
