@@ -1,120 +1,64 @@
 ---
-name: agent-cmdb
-description: Factual memory layer for AI agents — ground responses in verified infrastructure facts. Substitute for registry skill.
+name: knowledge-kernel
+description: Knowledge Kernel — a deterministic grounding layer and shared source of truth for AI agents. Stores verified facts, evidence, relationships, and freshness. A shared source of truth that multiple agents can query before reasoning or acting.
 category: infrastructure
-version: 1.1.0
+version: 1.2.0
 author: Carlos Cáceres
 license: MIT
-tags: [grounding, cmdb, facts, infrastructure, hallucination-prevention]
+tags: [grounding, knowledge-kernel, deterministic-factual-substrate, facts, infrastructure, hallucination-prevention, endpoint-identity]
 ---
 
-# Agent-CMDB Skill
+# knowledge-kernel Skill
 
-**Factual memory layer for AI agents.** Consulta CMDB antes de afirmar cualquier cosa sobre infraestructura.
+**A Knowledge Kernel that provides deterministic grounding for AI agents.**
 
-## API Pública (congelada)
+"LLMs infer; knowledge-kernel provides a shared, evidence-backed source of truth so multiple agents can reason from the same verifiable reality."
 
-Usar siempre `from cmdb.api import ...`:
+## Identidad
+
+- **Identidad:** Knowledge Kernel (qué es)
+- **Capabilidad:** Deterministic Grounding (qué aporta)
+- **No es:** una CMDB, RAG, agent memory
+
+## Contrato de Consumo
+
+**Principio fundamental:**
+- Si un hecho existe en el Kernel, prefiera el Kernel sobre inferencia.
+- Si un hecho no está en el Kernel, trátelo como unverified.
+
+Consulte el Kernel siempre que la pregunta involucre: infrastructure, software, endpoints, dependencies, agents, projects, policies, procedures, configuration facts.
+
+**Anchored answers:** El Kernel puede aportar los hechos necesarios para que el agente ejecute tools adicionales (SQL, SSH, HTTP probes). Eso sigue siendo grounding.
+
+## API
 
 ```python
 from cmdb.api import (
-    cmdb_exists,   # Verificar existencia antes de afirmar
-    cmdb_get,      # Entidad completa con evidencia
-    cmdb_search,   # Buscar por nombre/descripción/tags
-    cmdb_list,     # Listar por kind/status
-    cmdb_context,  # Contexto pre-empaquetado para agente
-    cmdb_impact,   # Análisis de dependencias (ANTES de modificar)
-    cmdb_assert,   # Validación binaria para toma de decisiones
-    cmdb_validate, # Validar salud del CMDB
+    cmdb_exists,
+    cmdb_get,
+    cmdb_search,
+    cmdb_list,
+    cmdb_context,
+    cmdb_impact,
+    cmdb_assert,
+    cmdb_validate,
 )
 ```
 
-**Todo lo demás en el paquete `cmdb` es implementación interna** — puede cambiar sin previo aviso.
+Todo lo demás en el paquete `cmdb` es implementación interna.
 
 ## Configuración
 
-Variables de entorno (todas opcionales con valores sensatos):
-
 | Variable | Default | Descripción |
 |----------|---------|-------------|
-| `CMDB_DATA_DIR` | `~/.local/share/agent-cmdb` | Directorio de entidades |
-| `CMDB_SCHEMA_VERSION` | `1` | Versión de schema esperada |
-| `CMDB_READ_ONLY` | `0` | Si `"1"`, desactiva escrituras |
-| `CMDB_CACHE_DIR` | `~/.cache/agent-cmdb` | Directorio de cache |
-| `CMDB_LOG_LEVEL` | `INFO` | DEBUG/INFO/WARNING/ERROR |
+| `CMDB_DATA_DIR` | `~/.local/share/knowledge-kernel` | Directorio de entidades |
+| `CMDB_CACHE_DIR` | `~/.cache/knowledge-kernel` | Directorio de cache |
 
-## Estructura del Paquete
+## Version canónico
 
-```
-cmdb/
-├── api.py              # API pública (SOLO esto es estable)
-├── config.py           # Configuración centralizada
-├── query.py            # cmdb_exists, cmdb_get, cmdb_search, cmdb_list
-├── impact.py           # cmdb_impact
-├── assertions.py       # cmdb_assert, cmdb_context
-├── validator.py        # cmdb_validate
-├── registry_migrator.py # migrate-registry (CLI + API)
-└── models/             # Modelos internos (pueden cambiar)
-```
-
-## Comportamiento Obligatorio
-
-### Regla 1: Consultar antes de afirmar
-
-```python
-# ❌ Incorrecto
-print("MySQL corre en server-42")
-
-# ✅ Correcto
-result = cmdb_exists("mysql")
-if result["exists"]:
-    print(f"MySQL existe: {result['kind']}")
-else:
-    print("MySQL no encontrado en CMDB")
-```
-
-### Regla 2: Verificar confianza
-
-```python
-result = cmdb_get("ollama")
-if result["evidence"]["confidence_level"] == "verified":
-    print("Ollama runs_on server-53 (verificado)")
-else:
-    print(f"Confianza: {result['evidence']['confidence_level']}")
-```
-
-### Regla 3: Impacto antes de modificar
-
-```python
-impact = cmdb_impact("ollama")
-if impact["risk_indicators"]["single_point_of_failure"]:
-    print("⚠️ SPOF detectado — requiere mantenimiento")
-```
-
-## Separación de Responsabilidades
-
-| Agent-CMDB provee | Agente (LLM) decide |
-|-------------------|---------------------|
-| Hechos: "ollama corre en server-53" | Interpretación: "esto es riesgoso" |
-| Evidencia: por qué confiar | Recomendaciones |
-| Confianza: nivel de calidad | Decisiones |
-| Impacto: gráfico de dependencias | Acciones |
-
-## Migración desde Registry
-
-```bash
-# Dry-run (simular)
-cmdb migrate-registry --from ~/registry --to ~/knowledge/agent-cmdb --dry-run
-
-# Aplicar migración
-cmdb migrate-registry --from ~/registry --to ~/knowledge/agent-cmdb
-
-# Verificar
-cmdb migrate-registry --from ~/registry --to ~/knowledge/agent-cmdb --verify
-```
+Este archivo es la versión shipping. La versión estándar con ejemplos completos y decision flow vive en `~/.hermes/skills/knowledge-kernel/SKILL.md`.
 
 ## Referencias
 
-- Paquete cmdb: `~/agent-cmdb/cmdb/`
-- Documentación: `~/agent-cmdb/README.md`
-- Schema v1: `~/agent-cmdb/examples/entities/`
+- Paquete `cmdb`: `~/agent-cmdb/cmdb/`
+- Documentación: `~/agent-cmdb/README.md` y `docs/`
