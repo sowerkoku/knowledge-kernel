@@ -1,4 +1,4 @@
-# Agent CMDB — Examples
+# knowledge-kernel — Examples
 
 Sanitized example entities for documentation and testing.
 
