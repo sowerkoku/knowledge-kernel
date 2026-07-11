@@ -78,6 +78,7 @@ class EngineStats:
     indexes_built_at: datetime
     load_wall_ms: int
     memory_estimate_kb: int
+    last_refresh_reason: str = "initial_load"
 
 
 class KernelEngine:
@@ -131,49 +132,77 @@ class KernelEngine:
             self.reload()
 
     def reload(self) -> EngineStats:
-        """Rebuild indexes from YAML dataset. Read-only after this returns."""
-        with self._lock:
+            """
+            Rebuild indexes from YAML dataset.
+
+            Atomic reload pattern:
+            1. Build new indexes in temporary locals
+            2. Validate (implicit: skip invalid YAMLs)
+            3. Swap references under lock
+
+            Never exposes partial state to readers.
+            """
             start = datetime.now()
-            self._id_index.clear()
-            self._kind_index.clear()
-            self._forward_relation_index.clear()
-            self._reverse_relation_index.clear()
 
-            if not self.entities_dir.exists():
-                self._stats = EngineStats(
-                    entity_count=0,
-                    by_kind={},
-                    indexes_built_at=start,
-                    load_wall_ms=0,
-                    memory_estimate_kb=0,
-                )
-                return self._stats
-
+            # Build in temporaries (no lock held yet)
+            new_id_index: Dict[str, Entity] = {}
+            new_kind_index: Dict[str, Set[str]] = {}
+            new_forward_index: Dict[str, List[Relation]] = {}
+            new_reverse_index: Dict[str, List[Relation]] = {}
             kind_counts: Dict[str, int] = {}
             count = 0
 
-            for yaml_file in self.entities_dir.rglob("*.yaml"):
-                try:
-                    entity = self._load_yaml(yaml_file)
-                    if entity is None:
+            if self.entities_dir.exists():
+                for yaml_file in self.entities_dir.rglob("*.yaml"):
+                    try:
+                        entity = self._load_yaml(yaml_file)
+                        if entity is None:
+                            continue
+                    
+                        # Index
+                        new_id_index[entity.id] = entity
+                    
+                        if entity.kind not in new_kind_index:
+                            new_kind_index[entity.kind] = set()
+                        new_kind_index[entity.kind].add(entity.id)
+                    
+                        # Forward relations
+                        if entity.id not in new_forward_index:
+                            new_forward_index[entity.id] = []
+                        new_forward_index[entity.id].extend(entity.relations)
+                    
+                        # Reverse relations
+                        for rel in entity.relations:
+                            if rel.target not in new_reverse_index:
+                                new_reverse_index[rel.target] = []
+                            new_reverse_index[rel.target].append(Relation(type=rel.type, target=entity.id))
+                    
+                        kind_counts[entity.kind] = kind_counts.get(entity.kind, 0) + 1
+                        count += 1
+                    
+                    except Exception:
+                        # Skip malformed files (validator catches separately)
                         continue
-                    self._insert(entity)
-                    kind_counts[entity.kind] = kind_counts.get(entity.kind, 0) + 1
-                    count += 1
-                except Exception:
-                    # Skip unreadable/malformed files (validator handles errors separately)
-                    continue
 
-            elapsed = int((datetime.now() - start).total_seconds() * 1000)
-            self._stats = EngineStats(
-                entity_count=count,
-                by_kind=kind_counts,
-                indexes_built_at=start,
-                load_wall_ms=elapsed,
-                memory_estimate_kb=self._estimate_memory_kb(),
-            )
+            # Atomic swap under lock
+            with self._lock:
+                self._id_index = new_id_index
+                self._kind_index = new_kind_index
+                self._forward_relation_index = new_forward_index
+                self._reverse_relation_index = new_reverse_index
+            
+                self._stats = EngineStats(
+                    entity_count=count,
+                    by_kind=kind_counts,
+                    indexes_built_at=start,
+                    load_wall_ms=int((datetime.now() - start).total_seconds() * 1000),
+                    memory_estimate_kb=self._estimate_memory_kb(),
+                )
+                self._dataset_mtime = self._get_dataset_mtime() if self.entities_dir.exists() else 0.0
+                self._loaded = True
+                self._stats.last_refresh_reason = "dataset_changed" if count > 0 else "empty_or_missing_dataset"
+        
             return self._stats
-
     def _load_yaml(self, yaml_file: Path) -> Optional[Entity]:
         """Parse one YAML file into Entity object."""
         with open(yaml_file, "r", encoding="utf-8") as f:
@@ -278,6 +307,20 @@ class KernelEngine:
             assert self._stats is not None, "Stats should be set after ensure_loaded()"
             return self._stats
 
+    def _get_dataset_mtime(self) -> float:
+        """Get max mtime of all YAML files in dataset."""
+        max_mtime = 0.0
+        if not self.entities_dir.exists():
+            return 0.0
+        for yaml_file in self.entities_dir.rglob("*.yaml"):
+            try:
+                mtime = yaml_file.stat().st_mtime
+                if mtime > max_mtime:
+                    max_mtime = mtime
+            except OSError:
+                continue
+        return max_mtime
+
     def _estimate_memory_kb(self) -> int:
         """Rough memory estimate by serializing indexes."""
         import json
@@ -293,6 +336,8 @@ class KernelEngine:
 
 def get_engine(entities_dir: Path) -> KernelEngine:
     """Get or create engine instance."""
+    if isinstance(entities_dir, str):
+        entities_dir = Path(entities_dir)
     return KernelEngine.get_instance(entities_dir)
 
 
