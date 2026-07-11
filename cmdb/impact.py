@@ -15,7 +15,7 @@ from pathlib import Path
 from collections import defaultdict
 import os
 
-from .validator import load_entities_with_paths
+from .engine import get_engine, Entity as EngineEntity
 from .config import get_config
 
 
@@ -39,106 +39,54 @@ REVERSE_DEPENDENCY_RELATIONS = {"owns", "monitors", "backs_up"}
 def cmdb_impact(entity_id: str, entities_dir: Optional[Path] = None) -> dict:
     """
     Analyze the impact of changing or failing an entity.
-    
+
     **Agent usage:**
     Use this before making infrastructure changes to understand blast radius.
-    
+
     ```python
     impact = cmdb_impact("ollama")
-    
+
     # What breaks if Ollama fails?
     if impact["exists"]:
         print(f"Direct dependents: {impact['depends_on_me']['direct']}")
         print(f"Transitive dependents: {impact['depends_on_me']['transitive']}")
         print(f"Affected layers: {impact['affected_layers']}")
     ```
-    
+
     Args:
         entity_id: The entity to analyze (e.g., "ollama", "mysql", "server-53")
         entities_dir: Path to entities directory
-    
+
     Returns:
         Impact analysis result.
-        
-        Example:
-        ```python
-        {
-            "target": {
-                "id": "ollama",
-                "kind": "software",
-                "status": "operational",
-            },
-            "exists": True,
-            
-            # Entities that depend ON the target (target is their dependency)
-            "depends_on_me": {
-                "direct": [
-                    {"id": "hermes", "kind": "software", "relation": "uses"},
-                ],
-                "transitive": [
-                    {"id": "telegram-bot", "kind": "automation", "path": ["telegram-bot", "hermes", "ollama"]},
-                ],
-            },
-            
-            # Entities that the target depends on (target is their dependent)
-            "i_depend_on": {
-                "direct": [
-                    {"id": "server-53", "kind": "asset", "relation": "runs_on"},
-                ],
-                "transitive": [],
-            },
-            
-            # Group by affected layer
-            "affected_layers": {
-                "software": ["hermes"],
-                "automation": ["telegram-bot"],
-                "data": [],
-                "endpoints": [],
-                "assets": [],
-            },
-            
-            # Factual risk indicators (not recommendations)
-            "risk_indicators": {
-                "total_dependents": 2,
-                "critical_dependents": [],  # Entities with criticality.business=high
-                "redundancy_found": False,  # No alternate providers found
-                "single_point_of_failure": True,  # If total_dependents > 0 and no redundancy
-            },
-        }
-        ```
-        
-        If entity not found:
-        ```python
-        {
-            "target": {"id": "redis"},
-            "exists": False,
-            "reason": "Entity not found in CMDB",
-        }
-        ```
     """
     entities_dir = entities_dir or DEFAULT_ENTITIES_DIR
-    entities, _ = load_entities_with_paths(entities_dir)
-    
+    engine = get_engine(entities_dir)
+
     # Check if target exists
-    if entity_id not in entities:
+    target_entity = engine.get_by_id(entity_id)
+    if target_entity is None:
         return {
             "target": {"id": entity_id},
             "exists": False,
             "reason": "Entity not found in CMDB",
         }
-    
-    target = entities[entity_id]
-    
+
+    # Convert to dict format for existing functions
+    entities_dict = {e.id: _entity_to_impact_dict(e) for e in engine.get_all_entities()}
+
+    target = entities_dict[entity_id]
+
     # Build dependency graph
-    depends_on_me = _find_dependents(entity_id, entities)
-    i_depend_on = _find_dependencies(entity_id, entities)
-    
+    depends_on_me = _find_dependents(entity_id, entities_dict)
+    i_depend_on = _find_dependencies(entity_id, entities_dict)
+
     # Group by affected layers
     affected_layers = _group_by_layer(depends_on_me)
-    
+
     # Calculate risk indicators (factual, not interpretive)
-    risk_indicators = _calculate_risk_indicators(depends_on_me, entities)
-    
+    risk_indicators = _calculate_risk_indicators(depends_on_me, entities_dict)
+
     return {
         "target": {
             "id": entity_id,
@@ -150,6 +98,17 @@ def cmdb_impact(entity_id: str, entities_dir: Optional[Path] = None) -> dict:
         "i_depend_on": i_depend_on,
         "affected_layers": affected_layers,
         "risk_indicators": risk_indicators,
+    }
+
+
+def _entity_to_impact_dict(entity: "EngineEntity") -> dict:
+    """Convert EngineEntity to dict format expected by impact functions."""
+    return {
+        "id": entity.id,
+        "kind": entity.kind,
+        "status": entity.status,
+        "relations": [{"type": r.type, "target": r.target} for r in entity.relations],
+        "criticality": entity.criticality,
     }
 
 
