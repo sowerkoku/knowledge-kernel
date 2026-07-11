@@ -43,6 +43,24 @@ If an entity fails any condition → it stays out until verified.
 | 6 | Entry criteria: exists + evidence + observed property + observed_at + provenance + valid relations |
 | 7 | Facts are replaceable; evidence is append-only |
 
+**Rule 8 — Every fact is reproducible from its evidence.** A fact without evidence is just a claim. A fact with evidence (source + discovery_method + observed_at + discovery_run) can be re-derived, re-verified, and re-audited. This is what transforms a YAML store into a Knowledge Kernel.
+
+```yaml
+# Without evidence — an assertion
+primary_ip: 192.168.1.54
+
+# With evidence — a reproducible fact
+primary_ip: 192.168.1.54
+provenance:
+  discovered_by: endpoint-discovery
+  discovery_method: ssh:ip_addr
+  discovery_run: "2026-07-10T20:33:12Z"
+evidence:
+  source: "ip addr show eth0 | grep inet"
+  observed_at: "2026-07-10T20:33:12Z"
+  confidence: high
+```
+
 **Rule 7 — Evidence is append-only:** When a fact changes (e.g., `orange-pi-54` moves from `.54` to `.60`), the new fact replaces the old one. But the evidence trail is never overwritten. Both the old and new observation survive in the YAML history, enabling future audit: *who created this fact, how, when, and can I reproduce it?* This is the difference between a Knowledge Kernel and a simple YAML store.
 
 ---

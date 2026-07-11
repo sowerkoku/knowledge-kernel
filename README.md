@@ -4,10 +4,27 @@
 
 knowledge-kernel is a Knowledge Kernel that stores verified facts, evidence, relationships, and freshness so multiple agents can reason consistently from the same verifiable reality.
 
-- **Facts** — verified entities, not inferred knowledge
-- **Evidence** — why we trust each fact (source, confidence, observed_at)
-- **Freshness** — computed at query time, never stored
-- **Deterministic API** — same data, same time, same result
+knowledge-kernel is a **deterministic, reproducible and auditable factual substrate** for AI agents.
+
+It stores verified facts, the evidence supporting them, their relationships and their recency, so that multiple agents can reason from the same observable reality.
+
+- **Determinism** — Two agents with the same Kernel state obtain the same factual answer.
+- **Auditability** — Every fact answers: What do we know? Why do we believe it? When was it observed? How was it discovered? Who incorporated it?
+- **Reproducibility** — Any observation can be re-executed from its evidence (provenance.discovered_by + discovery_method + discovery_run).
+
+### The Four Layers
+
+```
+Reality
+   ↓
+Evidence          ← source + observed_at + discovery_method
+   ↓
+Facts             ← Entities (Asset, Software, Endpoint, Automation, Agent) + Relations
+   ↓
+Grounded Reasoning ← Agents query the Kernel, then reason deterministically
+```
+
+**Entities are types of facts, not the center of the system. Evidence is the center.**
 
 ---
 
