@@ -34,13 +34,16 @@ class QueryEvent:
     timestamp: str
     session_id: str
     agent_id: str
-    api: str  # cmdb_get, cmdb_list, cmdb_search, cmdb_impact, cmdb_exists
-    entity_id: Optional[str]  # for cmdb_get, cmdb_impact
-    kind_filter: Optional[str]  # for cmdb_list
-    facts_requested: int  # 1 for single-entity queries, N for list/search
+    api: str
+    entity_id: Optional[str]
+    kind_filter: Optional[str]
+    facts_requested: int
     facts_found: int
     used_kernel: bool
     latency_ms: float
+    schema_version: int = 1
+    kernel_version: str = "L2.1"
+    dataset_snapshot: Optional[str] = None
 
     def to_jsonl(self) -> str:
         return json.dumps(asdict(self), ensure_ascii=False)
@@ -52,8 +55,9 @@ class AssertionEvent:
     timestamp: str
     session_id: str
     agent_id: str
-    assertion: str  # Natural language assertion
-    fact_ids: List[str]  # Entity IDs used as grounding
+    assertion: str
+    fact_ids: List[str]
+    schema_version: int = 1
 
     def to_jsonl(self) -> str:
         return json.dumps(asdict(self), ensure_ascii=False)
@@ -87,6 +91,17 @@ def log_query(
 ) -> None:
     """Log a query event. Called automatically by cmdb.api wrappers."""
     ensure_dirs()
+    
+    # Dataset snapshot: entity_count@timestamp
+    try:
+        from pathlib import Path
+        from cmdb.engine import get_engine
+        engine = get_engine(Path.home() / "knowledge" / "knowledge-kernel")
+        stats = engine.get_stats()
+        dataset_snapshot = f"{stats.entity_count}@{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M')}"
+    except Exception:
+        dataset_snapshot = None
+    
     event = QueryEvent(
         timestamp=datetime.now(timezone.utc).isoformat(),
         session_id=get_session_id(),
@@ -98,6 +113,7 @@ def log_query(
         facts_found=facts_found,
         used_kernel=used_kernel,
         latency_ms=round(latency_ms, 2),
+        dataset_snapshot=dataset_snapshot,
     )
     with QUERIES_FILE.open("a") as f:
         f.write(event.to_jsonl() + "\n")
