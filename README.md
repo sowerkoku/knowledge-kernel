@@ -1,8 +1,10 @@
 # knowledge-kernel
 
-**Deterministic grounding layer and shared source of truth for AI agents.**
+**A governed, deterministic and reproducible factual substrate for AI agents.**
 
-knowledge-kernel is a Knowledge Kernel that stores verified facts, evidence, relationships, and freshness so multiple agents can reason consistently from the same verifiable reality.
+knowledge-kernel manages evidence-backed claims about reality, their provenance, relationships and recency, so that multiple agents can reason from the same auditable view of the world.
+
+It is not a memory system, a vector store, a RAG corpus, or a classic CMDB. It is governed epistemic infrastructure — a system that defines what can be considered a shared and defensible fact for agents.
 
 knowledge-kernel is a **deterministic, reproducible and auditable factual substrate** for AI agents.
 

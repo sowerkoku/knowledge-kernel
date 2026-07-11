@@ -363,6 +363,39 @@ It is a governed factual substrate that enables multiple agents to reason from t
 
 ---
 
+## 12. Future Formalization: Fact Lifecycle and Evidence Levels
+
+Two areas are implicitly defined by the model but not yet formally codified:
+
+### Fact Lifecycle (implicit, not yet implemented)
+
+```
+Observed → Curated → Accepted → Stale → Replaced
+```
+
+- **Observed** — Discovery found a fact; evidence captured but not yet reviewed
+- **Curated** — Human reviewed evidence; fact is ready for entry
+- **Accepted** — Fact is in the active Kernel with valid evidence
+- **Stale** — Evidence is older than the domain TTL; needs re-verification
+- **Replaced** — A newer observation superseded the fact; old evidence preserved (append-only)
+
+This lifecycle is already implied by `observed_at`, `discovery_run`, and Rule 7 (evidence append-only), but the state machine is not yet formalized in code.
+
+### Evidence Levels (implied, not yet codified)
+
+```
+Declared → Discovered → Verified → Corroborated
+```
+
+- **Declared** — Human assertion without verification
+- **Discovered** — Captured via automated discovery (SSH, ss, docker ps)
+- **Verified** — Re-run discovery confirmed the observation
+- **Corroborated** — Multiple independent sources confirm the fact
+
+The current model has `confidence: high/medium/low` in evidence blocks, but this four-level scale would enable more precise governance. Not required today — the 8 rules + DQS already provide sufficient governance. These are noted for when the Kernel reaches Maturity Level 3+.
+
+---
+
 ## See also
 
 - [`README.md`](../README.md) — Project overview and quick start
