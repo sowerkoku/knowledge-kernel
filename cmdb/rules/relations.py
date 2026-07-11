@@ -27,6 +27,8 @@ VALID_RELATION_TYPES = {
     "belongs_to",
     "uses_profile",
     "listens_on",
+    "exposes",
+    "exposed_by",
 }
 
 # Reglas de compatibilidad: relation_type → target kinds válidos
@@ -39,6 +41,8 @@ RELATION_TARGET_KINDS = {
     "owns": None,  # Cualquier kind es válido
     "backs_up": {"data"},
     "monitors": None,  # Cualquier kind es válido
+    "exposes": {"endpoint"},  # software expone endpoint
+    "exposed_by": {"software"},  # endpoint expuesto por software
 }
 
 
