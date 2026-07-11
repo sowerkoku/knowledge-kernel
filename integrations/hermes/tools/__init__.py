@@ -5,6 +5,7 @@ from .cmdb_get import cmdb_get
 from .cmdb_assert import cmdb_assert
 from .cmdb_impact import cmdb_impact
 from .cmdb_context import cmdb_context
+from .cmdb_reload import cmdb_reload
 
 __all__ = [
     "cmdb_exists",
@@ -12,4 +13,5 @@ __all__ = [
     "cmdb_assert",
     "cmdb_impact",
     "cmdb_context",
+    "cmdb_reload",
 ]

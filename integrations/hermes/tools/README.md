@@ -19,6 +19,7 @@ Tools read from and write to the configured dataset.
 | `cmdb_assert(entity_id, kind, status)` | Binary validation | Decision requires specific state |
 | `cmdb_impact(entity_id)` | Dependency analysis | BEFORE modifying infrastructure |
 | `cmdb_context(agent_id)` | Pre-packaged context | Agent startup (call once) |
+| `cmdb_reload()` | Reload derived indexes | After editing YAML files directly |
 
 ## Import Pattern
 
@@ -28,6 +29,7 @@ from tools.cmdb_get import cmdb_get
 from tools.cmdb_assert import cmdb_assert
 from tools.cmdb_impact import cmdb_impact
 from tools.cmdb_context import cmdb_context
+from tools.cmdb_reload import cmdb_reload
 ```
 
 ## Tool Registration (config.yaml)
@@ -53,6 +55,10 @@ tools:
   - name: cmdb_context
     description: Get pre-packaged context for agent (call at startup)
     function: tools.cmdb_context:cmdb_context
+    
+  - name: cmdb_reload
+    description: Reload derived indexes after editing YAML
+    function: tools.cmdb_reload:cmdb_reload
 ```
 
 ## Testing
