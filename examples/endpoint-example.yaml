@@ -1,0 +1,25 @@
+schema_version: 1
+id: example-database
+kind: endpoint
+
+metadata:
+  name: PostgreSQL Database Endpoint
+  description: PostgreSQL database server endpoint
+  host: 10.0.0.10
+  port: 5432
+  protocol: tcp
+
+status: operational
+
+relations:
+  - type: exposed_by
+    target: postgres-db
+
+criticality:
+  business: high
+  operational: high
+  technical: high
+
+tags:
+  - database
+  - endpoint

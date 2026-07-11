@@ -1,0 +1,27 @@
+schema_version: 1
+id: hermes-default
+kind: agent
+
+metadata:
+  name: Hermes Agent (Default Profile)
+  description: Primary AI agent for infrastructure operations
+  version: "1.0"
+  profiles:
+    - default
+
+status: operational
+
+relations:
+  - type: queries
+    target: knowledge-kernel
+  - type: runs_on
+    target: app-server-01
+
+criticality:
+  business: high
+  operational: high
+  technical: high
+
+tags:
+  - ai-agent
+  - grounding

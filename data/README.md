@@ -1,8 +1,32 @@
-# knowledge-kernel Data Directory
+# Data Directory — Production Dataset (NOT in version control)
 
-This directory contains your infrastructure facts as YAML files.
+**This directory is intentionally empty in the repository.**
 
-## Structure
+Production datasets live externally (e.g., `~/knowledge/knowledge-kernel/`) and are excluded from git via `.gitignore`.
+
+## Why?
+
+**Code ≠ Data.** This repository contains:
+- The Knowledge Kernel API (`cmdb/`)
+- Documentation (`docs/`)
+- Integration wrappers (`integrations/`)
+- Canonical examples (`examples/`)
+
+Your infrastructure facts (the dataset) are **production data**, not code. They:
+- Change frequently (daily discoveries, updates)
+- Are environment-specific (your infra ≠ mine)
+- May contain sensitive details (hostnames, IPs, configurations)
+
+## Location
+
+Default dataset path: `~/knowledge/knowledge-kernel/`
+
+Configure via env var:
+```bash
+export CMDB_DATA_DIR=~/knowledge/knowledge-kernel
+```
+
+## Structure (when populated)
 
 ```
 data/
@@ -17,35 +41,15 @@ data/
 └── secrets/      # Encrypted credentials
 ```
 
-## Adding Entities
+## Getting Started
 
-Create YAML files in the appropriate category folder:
+Copy canonical examples to bootstrap your dataset:
 
-```yaml
-schema_version: 1
-id: my-server
-kind: asset
-metadata:
-  name: My Server
-  description: Physical server in datacenter
-  hostname: server-01
-  cpu: Intel Xeon
-  ram: 32GB
-status: operational
-relations: []
-criticality:
-  business: high
-  operational: high
-  technical: medium
+```bash
+cp examples/asset-example.yaml ~/knowledge/knowledge-kernel/assets/my-server.yaml
+cp examples/software-example.yaml ~/knowledge/knowledge-kernel/software/my-app.yaml
 ```
 
-## Security
+Then edit with your actual infrastructure facts.
 
-⚠️ **DO NOT commit this directory to version control**
-
-The `data/` directory is excluded from git via `.gitignore`.
-Your infrastructure data is sensitive — keep it private.
-
-## Examples
-
-See `../examples/entities/` for example entity formats.
+⚠️ **DO NOT commit `data/` to version control** — it is gitignored for a reason.
