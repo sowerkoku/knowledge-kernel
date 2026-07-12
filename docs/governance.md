@@ -40,11 +40,14 @@ This rule protects the project from the natural temptation to expand during usag
 - Targets: 100–500 real queries, then evidence-guided evolution
 
 **Permitted during freeze:**
-- Expand dataset (add missing entities, relations)
-- Fix bugs
-- Improve documentation
-- Tune performance
-- Analysis of telemetry (KAR, FGR, Fact Miss Rate, API distribution)
+
+| Allowed | Clarification |
+|---------|---------------|
+| Expand dataset (add missing entities, relations) | **Not** considered architectural change — it is empirical learning (Fact Miss Rate → new entity) |
+| Fix bugs | Defects only — no opportunistic refactoring |
+| Improve documentation | Always permitted |
+| Performance tuning | **Only** if it preserves public contracts and architectural boundaries. Forbidden: new caches, new indexes, prefetching, watchers, new layers. |
+| Analysis of telemetry | KAR, FGR, Fact Miss Rate, API distribution, dataset churn |
 
 **Not permitted during freeze:**
 - New public APIs
@@ -54,10 +57,79 @@ This rule protects the project from the natural temptation to expand during usag
 - Evidence engines
 - Auto-reload or file watchers
 - Architectural redesign
+- Performance optimizations that introduce new abstractions
 
 This rule operationalizes the principle:
 
 > The next architecture must emerge from observed usage patterns and empirical evidence, not anticipation.
+
+**The purpose of OBSERVE MODE is not to prove that the current architecture is correct. Its purpose is to discover where reality disagrees with our assumptions.**
+
+---
+
+### 1.5.1. Observation Objectives (per metric, per indicator)
+
+The freeze is not passive. During the 100–500 query window, we actively measure five indicators.
+
+#### A. Adoption
+
+| Indicator | Question | Target |
+|-----------|----------|--------|
+| **KAR** (queries using Kernel / queries needing facts) | ¿Hermes consulta el Kernel cuando debería? | > 80% |
+
+If KAR is low, the issue is **integration drift**, not architecture.
+
+#### B. Grounding Quality
+
+| Indicator | Question | Target |
+|-----------|----------|--------|
+| **FGR** (grounded assertions / total assertions) | ¿Las afirmaciones realmente están respaldadas? | > 90% |
+
+If FGR is low, the issue is **agent discipline**, not architecture.
+
+#### C. Dataset Sufficiency
+
+| Indicator | Question | Source |
+|-----------|----------|--------|
+| **Fact Miss Rate** per fact-id | ¿Falta conocimiento? | `cmdb_exists(X) == False` returns |
+| **Hotspot misses** | ¿Qué entidades faltan más? | log analysis |
+
+Missing facts come from observation; they are **not** architectural change. They are empirical learning.
+
+#### D. Usage Patterns
+
+| Indicator | Question | Signal |
+|-----------|----------|--------|
+| **API distribution** | ¿Cómo razonan los agentes? | e.g. cmdb_get 70%, cmdb_search 20%, cmdb_impact 8%, cmdb_list 2% |
+
+If the distribution contradicts our assumptions, we learn about **actual reasoning patterns**, not about required indexes.
+
+#### E. Dataset Churn (using `dataset_hash`)
+
+| Indicator | Question | Value |
+|-----------|----------|-------|
+| **`dataset_hash` changes/day** | ¿El estado factual es estable o cambia constantemente? | Low = stable, high = volatile |
+
+This becomes useful later when we ask: *Is the current `dataset_hash` still valid?* or *What changed between hash H1 and H2?*
+
+---
+
+### Reading the indicators together
+
+```
+KAR high + FGR high + Miss Rate high    → Kernel coverage gap (add entities)
+KAR high + FGR high + Miss Rate low     → Healthy
+KAR high + FGR low                      → Agent discipline (not architecture)
+KAR low                                 → Integration bug (not architecture)
+```
+
+Architecture changes are only justified by:
+
+> "Five indicators analyzed across N queries show [pattern X] which contradicts [assumption Y]."
+
+Not by:
+
+> "We could make it faster / simpler / prettier."
 
 ---
 
