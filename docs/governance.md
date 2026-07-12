@@ -26,6 +26,41 @@ This means:
 
 ---
 
+## 1.5. Observe Rule 1 (Change Freeze)
+
+**No architectural change may be introduced before observing at least 100 real queries**, unless fixing a defect or security issue.
+
+This rule protects the project from the natural temptation to expand during usage:
+
+> "Since we're here, let's add just one more thing..."
+
+**Current status:**
+- BUILD MODE = OFF
+- OBSERVE MODE = ON
+- Targets: 100–500 real queries, then evidence-guided evolution
+
+**Permitted during freeze:**
+- Expand dataset (add missing entities, relations)
+- Fix bugs
+- Improve documentation
+- Tune performance
+- Analysis of telemetry (KAR, FGR, Fact Miss Rate, API distribution)
+
+**Not permitted during freeze:**
+- New public APIs
+- New indexes not triggered by observed patterns
+- New engines or layers
+- Proposal queues
+- Evidence engines
+- Auto-reload or file watchers
+- Architectural redesign
+
+This rule operationalizes the principle:
+
+> The next architecture must emerge from observed usage patterns and empirical evidence, not anticipation.
+
+---
+
 ## 2. What Enters the Kernel
 
 | Criterion | Description |
