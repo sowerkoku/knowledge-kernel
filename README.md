@@ -57,14 +57,51 @@ Minimum observation: 100 real queries
 > The architecture is stable enough to stop designing
 > and mature enough to start learning from reality.
 
-The next valuable information is **not** in the code.
-It is in the behavior Hermes produces across the next hundreds of real queries.
+The next valuable information is **not** in additional architecture.
+It is in the behavior Hermes produces across real queries. Bugs,
+documentation gaps, and dataset coverage needs are all expected and
+*permitted* under OBSERVE RULE 1. What is **frozen** is the
+architecture, not the project.
+
+### Operational motto
+
+```
+Observe first.
+Conclude second.
+Design last.
+```
+
+Or equivalently:
+
+```
+Reality
+   ↓
+Evidence
+   ↓
+Conclusion
+   ↓
+Architecture
+```
+
+### The emergent contract
+
+```
+Canonical YAML
+   ↓
+Deterministic Indexes
+   ↓
+Stable Public API
+   ↓
+Telemetry
+   ↓
+Empirical Learning
+```
 
 ---
 
 knowledge-kernel manages evidence-backed claims about reality, their provenance, relationships and recency, so that multiple agents can reason from the same auditable view of the world.
 
-It is not a memory system, a vector store, a RAG corpus, or a classic CMDB. It is governed epistemic infrastructure — a system that defines what can be considered a shared and defensible fact for agents.
+It is not a memory system, a vector store, or a RAG corpus. It is governed epistemic infrastructure — a system that defines what can be considered a shared and defensible fact for agents.
 
 knowledge-kernel is a **deterministic, reproducible and auditable factual substrate** for AI agents.
 
@@ -72,34 +109,35 @@ It stores verified facts, the evidence supporting them, their relationships and 
 
 - **Determinism** — Two agents with the same Kernel state obtain the same factual answer.
 - **Auditability** — Every fact answers: What do we know? Why do we believe it? When was it observed? How was it discovered? Who incorporated it?
-- **Reproducibility** — Any observation can be re-executed from its evidence (provenance.discovered_by + discovery_method + discovery_run).
+- **Reproducibility** — Given the same `dataset_hash` and the same query, agents obtain the same factual answer.
 
 ### The Four Layers
 
 ```
 Reality
    ↓
-Evidence          ← source + observed_at + discovery_method
+Observations / Evidence   ← source + observed_at + discovery_method
    ↓
-Facts             ← Entities (Asset, Software, Endpoint, Automation, Agent) + Relations
+Structured Facts (Entities + Relations)
    ↓
-Grounded Reasoning ← Agents query the Kernel, then reason deterministically
+Grounded Reasoning         ← Agents query the Kernel, then reason deterministically
 ```
 
-**Entities are types of facts, not the center of the system. Evidence is the center.**
+> Evidence is epistemically primary. Entities are merely the serialization of accepted facts.
 
 ---
 
 ## The Problem
 
-**LLMs infer. Facts drift. Agents disagree.**
+**LLMs infer. Facts drift. Agents disagree. Evidence disappears.**
 
 When an LLM answers "Where does Ollama run?" it:
 - Infers from training data — often wrong
 - Cannot verify whether its answer is current
 - Does not share a single source of truth with other agents
+- Loses the trail of *what* was known, *why* it was trusted, *when* it was observed, and *how* it was discovered
 
-Agents need a shared deterministic factual layer they can query — not a model that guesses.
+Agents need a shared deterministic factual layer they can query — one that preserves *what*, *why*, *when*, and *how* — not a model that guesses.
 
 ---
 
@@ -205,6 +243,9 @@ Each entity answers one question:
 
 Eight functions. Nothing else is public.
 
+The public API is intentionally small.
+**New APIs require empirical evidence gathered during OBSERVE MODE.**
+
 ```python
 from cmdb.api import (
     cmdb_exists,    # Check before making any factual claim
@@ -214,9 +255,14 @@ from cmdb.api import (
     cmdb_impact,    # What breaks if X changes? (dependency graph)
     cmdb_assert,    # Binary validation for decisions
     cmdb_context,   # Pre-packaged agent startup context (lazy)
-    cmdb_validate,  # CMDB health check
+    cmdb_validate,  # Dataset / schema validation
 )
 ```
+
+Operational introspection (not in public API, available via skill tools):
+- `cmdb_reload()` — explicit index invalidation + observable contract
+- `cmdb_engine_info()` — runtime metadata (generation, dataset_hash, index counts)
+- `cmdb_stats()` — dataset summary (entity counts by kind)
 
 Everything else in the `cmdb` package is internal — subject to change.
 
@@ -316,7 +362,7 @@ Code and data are permanently separated. Updating the package never touches the 
 | IT Inventory | Not for human browsing; for agent grounding |
 | Monitoring | No real-time metrics |
 | Automation | Does not execute actions |
-| A CMDB | Not NetBox or ServiceNow — it is a deterministic factual grounding layer |
+| Traditional CMDB | Not an IT service inventory like NetBox or ServiceNow — it is an epistemic factual substrate for agents |
 
 ---
 
@@ -344,8 +390,17 @@ Code and data are permanently separated. Updating the package never touches the 
 ```
 v1.2  →  Endpoint model, exposes/exposed_by, computed entity.runs_on
 v1.1  →  Lazy integration with Hermes agents
-Future →  Runtime Discovery skill (SSH → evidence → proposal → human approval)
+Future →  Architectural evolution is intentionally deferred until
+         empirical telemetry justifies change.
 ```
+
+Current state: **BUILD MODE = OFF, OBSERVE MODE = ON**.
+
+Specific feature planning (proposal queues, evidence engines, watchers,
+multi-writer support) is intentionally absent — those concepts remain in
+the deferred-indicators section of `governance.md`. They enter the
+roadmap **only after** the 5 primary indicators produce evidence that
+contradicts current assumptions.
 
 ---
 
