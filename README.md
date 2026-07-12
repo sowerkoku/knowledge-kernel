@@ -2,6 +2,37 @@
 
 **A governed, deterministic and reproducible factual substrate for AI agents.**
 
+---
+
+## 🧊 L2.1 Status: Production Ready
+
+```
+BUILD MODE   = OFF
+OBSERVE MODE = ON
+```
+
+The next architecture must emerge from **observed usage patterns and empirical evidence**, not anticipation.
+
+**Permitted:**
+- Run Hermes normally
+- Collect 100–500 real queries
+- Generate reports
+- Fix bugs
+- Improve documentation
+- Expand factual dataset
+
+**Not permitted:**
+- New APIs
+- New indexes
+- New engines
+- Proposal queues
+- Evidence engines
+- Auto-reload
+- Watchers
+- New layers
+
+---
+
 knowledge-kernel manages evidence-backed claims about reality, their provenance, relationships and recency, so that multiple agents can reason from the same auditable view of the world.
 
 It is not a memory system, a vector store, a RAG corpus, or a classic CMDB. It is governed epistemic infrastructure — a system that defines what can be considered a shared and defensible fact for agents.

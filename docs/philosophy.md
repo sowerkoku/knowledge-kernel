@@ -278,6 +278,38 @@ Determinism     ← If it can be audited, agents arrive at the same fact
 
 ---
 
+### Invariants of `dataset_hash`
+
+The `dataset_hash` (SHA256[:8] of canonical YAML content) obeys three invariants:
+
+**Invariant 1 — Stability**
+```
+Same dataset
+    ⇒ same dataset_hash
+```
+If no YAML content changes, the hash remains identical across reloads, processes, and time.
+
+**Invariant 2 — Sensitivity**
+```
+Different dataset contents
+    ⇒ different dataset_hash
+```
+Any change to canonical YAML (add, edit, delete) will change the hash. This makes it a content-addressed identifier.
+
+**Invariant 3 — Independence from runtime state**
+```
+Same dataset_hash
+    ⇏ same engine_generation
+```
+You can reload the engine 10 times without changing YAML — the hash stays the same, but `engine_generation` increments. The hash represents **factual identity**, not operational state.
+
+These invariants ensure that `dataset_hash` is suitable for:
+- Reproducibility (Invariant 1)
+- Auditability (Invariant 2)
+- Temporal correlation (Invariant 3)
+
+---
+
 ## 9. The Eight Operational Rules
 
 Organized by purpose:
@@ -309,15 +341,28 @@ Organized by purpose:
 
 | # | Rule |
 |---|------|
-| 9 | Every grounded assertion SHOULD be attributable to a specific `dataset_hash` |
+| 9 | Every grounded assertion SHOULD be reproducibly attributable to a specific `dataset_hash` |
 
 Rule 9 does not require the agent to do anything special — `cmdb_get()` and
 `log_assertion()` automatically capture the current `dataset_hash` and
 `engine_generation`. The rule formalizes the property that any grounded claim
 made by an agent can be tied back to the exact canonical state of the
-Knowledge Kernel that supported it. This converts every assertion into an
-auditable event: *who* asserted, *what* was asserted, *which facts* supported
-it, and *under which dataset state* those facts were current.
+Knowledge Kernel that supported it — and can be **reproduced** under that
+state.
+
+The three properties are linked:
+
+```
+Reproducibility   ← Given dataset_hash, the same query yields the same answer
+        ↓
+Auditability      ← Who asserted, what, supported by which facts
+        ↓
+Determinism       ← Two agents under the same dataset_hash get the same answer
+```
+
+This converts every assertion into an auditable event: *who* asserted,
+*what* was asserted, *which facts* supported it, and *under which dataset
+state* those facts were current.
 
 ---
 
