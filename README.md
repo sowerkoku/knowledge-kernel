@@ -125,6 +125,21 @@ Grounded Reasoning         ← Agents query the Kernel, then reason deterministi
 
 > Evidence is epistemically primary. Entities are merely the serialization of accepted facts.
 
+### `dataset_hash` in three invariants
+
+Reproduction, audit, and identity rest on three guarantees. They are
+explicit, not implicit:
+
+| Invariant | Stated rule |
+|-----------|-------------|
+| **Stability** | Same dataset ⇒ same `dataset_hash` |
+| **Sensitivity** | Different dataset contents ⇒ different `dataset_hash` |
+| **Independence** | Same `dataset_hash` ⇏ same `engine_generation` (factual identity ≠ runtime state) |
+
+The hash represents **factual identity**, not operational state. It is
+content-addressed, which is exactly what makes reproducibility a
+contract — not a marketing claim.
+
 ---
 
 ## The Problem
