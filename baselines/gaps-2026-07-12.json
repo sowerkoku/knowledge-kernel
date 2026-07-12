@@ -1,0 +1,44 @@
+[
+  {
+    "type": "pilot",
+    "query": "firebird-eleventa",
+    "expected": "Legacy DB registered",
+    "root_cause": "TBD: data missing / not modeled / not discoverable"
+  },
+  {
+    "type": "pilot",
+    "query": "192.168.1.54",
+    "expected": "IP\u2192host discoverable",
+    "root_cause": "TBD: data missing / not modeled / not discoverable"
+  },
+  {
+    "type": "pilot",
+    "query": "11434",
+    "expected": "Ollama port discoverable",
+    "root_cause": "TBD: data missing / not modeled / not discoverable"
+  },
+  {
+    "type": "alias",
+    "alias": "192.168.1.54",
+    "expected_entity": "orange-pi-54",
+    "root_cause": "TBD: alias not modeled in tags/description/metadata"
+  },
+  {
+    "type": "alias",
+    "alias": "11434",
+    "expected_entity": "ollama-api",
+    "root_cause": "TBD: alias not modeled in tags/description/metadata"
+  },
+  {
+    "type": "alias",
+    "alias": "mysql",
+    "expected_entity": "mariadb",
+    "root_cause": "TBD: alias not modeled in tags/description/metadata"
+  },
+  {
+    "type": "alias",
+    "alias": "eleventa",
+    "expected_entity": "firebird-eleventa",
+    "root_cause": "TBD: alias not modeled in tags/description/metadata"
+  }
+]

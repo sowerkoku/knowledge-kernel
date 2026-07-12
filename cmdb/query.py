@@ -306,6 +306,16 @@ def cmdb_search(query: str, entities_dir: Optional[Path] = None) -> list[dict]:
                 score = max(score, 0.7)
                 match_field = "metadata.tags"
 
+        # Search all other scalar metadata fields (IP addresses, ports, hostnames, etc.)
+        for key, value in metadata.items():
+            if key in ("name", "description", "version", "tags"):
+                continue  # Already handled above
+            if isinstance(value, (str, int, float, bool)):
+                if query_lower in str(value).lower():
+                    score = max(score, 0.6)
+                    match_field = f"metadata.{key}"
+                    break
+
         # Relations
         for rel in entity.relations:
             target = rel.target
