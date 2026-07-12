@@ -305,6 +305,20 @@ Organized by purpose:
 | 7 | Facts are replaceable; evidence is append-only |
 | 8 | Every fact is reproducible from its evidence |
 
+**Auditability** — every grounded claim attributable to evidence:
+
+| # | Rule |
+|---|------|
+| 9 | Every grounded assertion SHOULD be attributable to a specific `dataset_hash` |
+
+Rule 9 does not require the agent to do anything special — `cmdb_get()` and
+`log_assertion()` automatically capture the current `dataset_hash` and
+`engine_generation`. The rule formalizes the property that any grounded claim
+made by an agent can be tied back to the exact canonical state of the
+Knowledge Kernel that supported it. This converts every assertion into an
+auditable event: *who* asserted, *what* was asserted, *which facts* supported
+it, and *under which dataset state* those facts were current.
+
 ---
 
 ## 10. A Maturity Model for the Kernel
