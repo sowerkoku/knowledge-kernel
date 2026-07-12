@@ -213,7 +213,7 @@ These become relevant only after the 5 primary indicators show stable patterns i
 - Who made the decision?
 - What changed since then?
 
-The Wiki / ADR documents the "why" — see `/home/carlos/proyectos/cic-v3/docs/decisions/decision_log.md`.
+The Wiki / ADR documents the "why" — see `~/proyectos/cic-v3/docs/decisions/decision_log.md`.
 
 ---
 
@@ -314,7 +314,7 @@ if not fact.evidence.is_fresh():
 | v1.2 | `entity.runs_on` computed from relations | Single source of truth for location |
 | v1.2 | Freshness computed, never stored | Prevent stale values |
 
-Full decision log: `/home/carlos/proyectos/cic-v3/docs/decisions/decision_log.md`
+Full decision log: `~/proyectos/cic-v3/docs/decisions/decision_log.md`
 
 ---
 
