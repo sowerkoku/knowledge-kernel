@@ -1,6 +1,6 @@
-# Agent-CMDB Integrations
+# Knowledge Kernel Integrations
 
-Integration wrappers for connecting Agent-CMDB to specific agent frameworks.
+Integration wrappers for connecting the Knowledge Kernel to specific agent frameworks.
 
 ## Directory Structure
 
@@ -17,7 +17,7 @@ integrations/
 
 ## Design Principle
 
-Agent-CMDB core is **framework-agnostic**.
+The knowledge-kernel core is **framework-agnostic**.
 
 Integrations provide:
 - Framework-specific wrappers
