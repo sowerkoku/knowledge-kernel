@@ -1,4 +1,4 @@
-# agent-cmdb Design Principles — Session 2026-07-07
+# Knowledge Kernel Design Principles — Session 2026-07-07
 
 Principios que emergieron de la sesión de revisión de API + integración con Hermes.
 
@@ -78,11 +78,11 @@ Un acceptance test con consultas conocidas даёт FGR = 100%. Eso valida la in
 
 ---
 
-## 6. El rol de agent-cmdb: grounding, no infraestructura
+## 6. El rol del knowledge-kernel: grounding, no infraestructura
 
 Frase que captura el rol:
 
-> "agent-cmdb no es infraestructura para el LLM; es infraestructura para el grounding del LLM."
+> "El knowledge-kernel no es infraestructura para el LLM; es infraestructura para el grounding del LLM."
 
 El objetivo no es que el modelo responda más preguntas, sino proporcionar una base factual determinista para que el razonamiento posterior tenga un punto de apoyo confiable.
 
@@ -108,7 +108,7 @@ Esto NO es un bug — es el diseño funcionando. La relación existe en `relatio
 Los 14 Core Tests verifican que el sistema funciona, no que existen datos específicos. Son la línea antes de cualquier push.
 
 ```
-cd ~/agent-cmdb
-CMDB_DATA_DIR=~/knowledge/agent-cmdb \
+cd ~/knowledge-kernel
+CMDB_DATA_DIR=~/knowledge/knowledge-kernel \
   ~/.hermes/hermes-agent/venv/bin/python3 -m pytest tests/test_acceptance.py -v -k "Core"
 ```

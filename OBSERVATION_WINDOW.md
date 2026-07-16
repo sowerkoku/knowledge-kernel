@@ -111,9 +111,9 @@ Fields verified:
 
 ## Files
 
-- `~/agent-cmdb/baselines/baseline-2026-07-12.md` — Initial baseline
-- `~/agent-cmdb/baselines/baseline-2026-07-12.json` — JSON baseline
-- `~/agent-cmdb/baselines/gaps-2026-07-12.json` — Gap analysis (all resolved)
+- `~/knowledge-kernel/baselines/baseline-2026-07-12.md` — Initial baseline
+- `~/knowledge-kernel/baselines/baseline-2026-07-12.json` — JSON baseline
+- `~/knowledge-kernel/baselines/gaps-2026-07-12.json` — Gap analysis (all resolved)
 - `~/.hermes/telemetry/kernel/queries.jsonl` — Live query log
 - `~/.hermes/telemetry/kernel/assertions.jsonl` — Live assertion log
 

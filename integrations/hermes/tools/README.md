@@ -1,6 +1,6 @@
-# Hermes Tools for Agent-CMDB
+# Hermes Tools for the Knowledge Kernel
 
-Tool wrappers exposing Agent-CMDB functionality to Hermes Agent.
+Tool wrappers exposing the Knowledge Kernel functionality to Hermes Agent.
 
 ## Storage Location
 
@@ -37,7 +37,7 @@ from tools.cmdb_reload import cmdb_reload
 ```yaml
 tools:
   - name: cmdb_exists
-    description: Check if entity exists in Agent-CMDB
+    description: Check if entity exists in the Knowledge Kernel
     function: tools.cmdb_exists:cmdb_exists
     
   - name: cmdb_get
