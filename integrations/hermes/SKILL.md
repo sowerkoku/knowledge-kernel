@@ -140,7 +140,7 @@ agent can reason on each independently.
 Endpoint `id`s are stable. The fields `host` / `port` / `protocol` describe
 the observed access point and may change without altering the entity ID.
 This lets an endpoint migrate from `192.168.1.50:3306` to
-`192.168.1.54:3306` without breaking relations.
+`192.168.10.10:3306` without breaking relations.
 
 ## 5. Structure
 

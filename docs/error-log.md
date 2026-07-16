@@ -35,7 +35,7 @@ entity.runs_on   # → "orange-pi-54" — from relations[], not metadata
 # ❌ WRONG — target must be an entity ID
 relations:
   - type: runs_on
-    target: 192.168.1.54     # literal IP — not an entity
+    target: 192.168.10.10     # literal IP — not an entity
 ```
 
 **Correction:**
@@ -59,7 +59,7 @@ relations:
 # ❌ WRONG — mixes identity (name) with observation (connection details)
 id: ollama-api
 metadata:
-  url: http://192.168.1.54:11434
+  url: http://192.168.10.10:11434
 ```
 
 **Correction:**
@@ -68,7 +68,7 @@ metadata:
 id: ollama-api
 kind: endpoint
 metadata:
-  host: 192.168.1.54    # observed — may change
+  host: 192.168.10.10    # observed — may change
   port: 11434           # observed — may change
   protocol: http       # observed — may change
 ```

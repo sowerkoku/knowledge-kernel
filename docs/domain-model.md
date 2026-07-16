@@ -66,7 +66,7 @@ If it does not improve queries or impact analysis, it is configuration — not a
 │  ID = stable identity                   │
 │  host/port/protocol = observed facts     │
 │  (may change without changing the ID)   │
-│  Example: ollama-api → 192.168.1.54:    │
+│  Example: ollama-api → 192.168.10.10:    │
 │  11434, http                             │
 └─────────────────────────────────────────┘
                     │
@@ -95,7 +95,7 @@ Its **host/port/protocol** are observed facts that may change:
 
 ```yaml
 metadata:
-  host: 192.168.1.54   # observed — may change (IP migration, TLS, load balancer)
+  host: 192.168.10.10   # observed — may change (IP migration, TLS, load balancer)
   port: 11434          # observed — may change (port remapping)
   protocol: http       # observed — may change (HTTPS migration)
 ```

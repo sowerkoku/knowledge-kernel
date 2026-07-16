@@ -149,7 +149,7 @@ id: ollama-api        # stable — never changes
 **Observation** — may change without changing identity:
 ```yaml
 metadata:
-  host: 192.168.1.54   # observed — may change (migration, TLS, load balancer)
+  host: 192.168.10.10   # observed — may change (migration, TLS, load balancer)
   port: 11434          # observed — may change
   protocol: http       # observed — may change
 ```

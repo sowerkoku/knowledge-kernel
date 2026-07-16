@@ -7,7 +7,7 @@ layer: internal
 # Architecture — knowledge-kernel
 
 **Audience:** kernel maintainers and contributors. This document describes
-the internals. For "how to use" see `/home/carlos/.hermes/skills/knowledge-kernel/SKILL.md`.
+the internals. For "how to use" see `~/.hermes/skills/knowledge-kernel/SKILL.md`.
 
 ## L2 In-Memory Index Engine
 

@@ -39,7 +39,7 @@ Software  (ollama)
    │
    │ exposes
    ▼
-Endpoint  (ollama-api: 192.168.1.54:11434)
+Endpoint  (ollama-api: 192.168.10.10:11434)
 ```
 
 Each level discovered separately:
@@ -70,13 +70,13 @@ Discovery produces a **diff**, not a commit:
 ```python
 {
     "observed": [
-        {"id": "ollama-api", "host": "192.168.1.54", "port": 11434, "protocol": "http"},
+        {"id": "ollama-api", "host": "192.168.10.10", "port": 11434, "protocol": "http"},
     ],
     "in_kernel": [
         {"id": "ollama-api", "host": "localhost", "port": 11434, "protocol": "http"},  # WRONG
     ],
     "proposed_changes": [
-        {"field": "metadata.host", "from": "localhost", "to": "192.168.1.54", "entity": "ollama-api"}
+        {"field": "metadata.host", "from": "localhost", "to": "192.168.10.10", "entity": "ollama-api"}
     ]
 }
 ```

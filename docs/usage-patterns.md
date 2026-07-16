@@ -174,14 +174,14 @@ print(f'Host: {mysql.entity.runs_on}')
 "
 
 # Then verify connectivity before connecting
-ping -c 1 -W 2 192.168.1.54
+ping -c 1 -W 2 192.168.10.10
 for port in 22 3306; do
-    timeout 2 bash -c "echo >/dev/tcp/192.168.1.54/$port" 2>/dev/null \
+    timeout 2 bash -c "echo >/dev/tcp/192.168.10.10/$port" 2>/dev/null \
         && echo "Port $port: OPEN" || echo "Port $port: CLOSED"
 done
 
 # Then connect
-mysql -h 192.168.1.54 -u agente -p -e "SHOW DATABASES"
+mysql -h 192.168.10.10 -u agente -p -e "SHOW DATABASES"
 ```
 
 ---
@@ -208,7 +208,7 @@ running_here = [
 Containers with `--network=host` do not appear in `docker ps --format "{{.Ports}}"`. Verify with `ss -tlnp` on the host:
 
 ```bash
-ssh carlos@192.168.1.54 'ss -tlnp | grep -E "LISTEN" | grep -v "127.0.0"'
+ssh carlos@192.168.10.10 'ss -tlnp | grep -E "LISTEN" | grep -v "127.0.0"'
 ```
 
 Known ports on orange-pi-54 (verified with ss + curl):

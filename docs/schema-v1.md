@@ -111,7 +111,7 @@ domain: infrastructure
 metadata:
   name: Ollama API
   # IDENTITY: host/port/protocol may change without changing the ID
-  host: 192.168.1.54
+  host: 192.168.10.10
   port: 11434
   protocol: http
 
@@ -152,7 +152,7 @@ Fields in `metadata` are **observed facts** — they describe the current state,
 ```yaml
 # host/port/protocol are observed — they may change
 metadata:
-  host: 192.168.1.54    # could become ollama.internal
+  host: 192.168.10.10    # could become ollama.internal
   port: 11434           # could become 443
   protocol: http        # could become https
 ```

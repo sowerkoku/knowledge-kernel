@@ -47,10 +47,10 @@ If an entity fails any condition → it stays out until verified.
 
 ```yaml
 # Without evidence — an assertion
-primary_ip: 192.168.1.54
+primary_ip: 192.168.10.10
 
 # With evidence — a reproducible fact
-primary_ip: 192.168.1.54
+primary_ip: 192.168.10.10
 provenance:
   discovered_by: endpoint-discovery
   discovery_method: ssh:ip_addr
@@ -137,7 +137,7 @@ id: server-192-168-1-52
 
 # ✅ Correct: explicit metadata
 metadata:
-  primary_ip: 192.168.1.52
+  primary_ip: 192.168.10.20
 ```
 
 ### Never assume running state from config

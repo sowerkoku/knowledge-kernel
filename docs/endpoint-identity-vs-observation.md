@@ -13,7 +13,7 @@ Two competing models for what an endpoint is:
 id: ollama-api
 kind: endpoint
 metadata:
-  url: http://192.168.1.54:11434    # ← identity = URL
+  url: http://192.168.10.10:11434    # ← identity = URL
 ```
 
 **Model B — Endpoint as communication identity**
@@ -21,7 +21,7 @@ metadata:
 id: ollama-api                       # ← identity = stable name
 kind: endpoint
 metadata:
-  host: 192.168.1.54                 # ← observed fact, may change
+  host: 192.168.10.10                 # ← observed fact, may change
   port: 11434                        # ← observed fact, may change
   protocol: http                     # ← observed fact, may change
 ```
@@ -38,7 +38,7 @@ The ID is the communication identity. It survives the migration. Observed facts 
 # Day 1
 id: ollama-api
 metadata:
-  host: 192.168.1.54
+  host: 192.168.10.10
   port: 11434
   protocol: http
 
@@ -73,9 +73,9 @@ If you store connection details as primary identity:
 
 ```yaml
 # ❌ WRONG — every change creates a new "entity"
-id: http-192.168.1.54-11434    # ID encodes network state
+id: http-192.168.10.10-11434    # ID encodes network state
 metadata:
-  url: http://192.168.1.54:11434
+  url: http://192.168.10.10:11434
 ```
 
 Problems:
@@ -132,7 +132,7 @@ relations:
   - type: exposes
     target: ollama-api            # ← identity link (stable)
 metadata:
-  host: 192.168.1.54              # ← observation (may change)
+  host: 192.168.10.10              # ← observation (may change)
   port: 11434
   protocol: http
 ```
