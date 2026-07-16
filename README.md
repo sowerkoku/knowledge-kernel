@@ -383,20 +383,20 @@ Code and data are permanently separated. Updating the package never touches the 
 
 ## When to Use a Knowledge Kernel
 
-**Use knowledge-kernel when:**
+Use knowledge-kernel when:
 
-✓ Multiple agents need the same facts
-✓ Facts must be evidence-backed
-✓ Facts change over time and freshness matters
-✓ Deterministic retrieval is more important than semantic search
-✓ You need a shared source of truth across agents
+- ✓ Multiple agents need the same facts.
+- ✓ Facts must be backed by evidence.
+- ✓ Facts change over time and freshness matters.
+- ✓ Deterministic retrieval is more important than semantic similarity.
+- ✓ You need a shared source of truth across agents.
 
-**Do not use knowledge-kernel when:**
+Do **not** use knowledge-kernel when:
 
-✗ You need document retrieval → use a vector database
-✗ You need conversational memory → use agent memory
-✗ You need vector similarity search → use embeddings
-✗ You need real-time monitoring → use Prometheus/Grafana
+- ✗ You need document retrieval → use a vector database.
+- ✗ You need conversational memory → use an agent memory system.
+- ✗ You need semantic similarity search → use embeddings.
+- ✗ You need real-time monitoring → use Prometheus/Grafana.
 
 ---
 
