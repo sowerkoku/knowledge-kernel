@@ -12,7 +12,7 @@
 |--------------------------------------------------|--------------------------------------------|
 | Understand what the Kernel is                    | [`philosophy.md`](./philosophy.md)         |
 | See how the L2 engine works                      | [`architecture.md`](./architecture.md)     |
-| Look at the public API                           | [`../integrations/hermes/SKILL.md`](../integrations/hermes/SKILL.md) |
+| Look at the public API                           | [`api-python.md`](./api-python.md) |
 | See how entities are modeled and validated       | [`domain-model.md`](./domain-model.md) + [`schema-v1.md`](./schema-v1.md) |
 | Check what belongs in the Kernel                 | [`governance.md`](./governance.md)         |
 | Audit the dataset                                | [`audit-methodology.md`](./audit-methodology.md) |
@@ -61,6 +61,7 @@ docs/
 ├── audit-methodology.md
 ├── endpoint-identity-vs-observation.md
 ├── error-log.md
+├── api-python.md              ← Python API reference (canonical)
 ├── pitfalls/                  ←  one pitfall per file
 ├── playbooks/                 ←  one operational recipe per file
 ├── history/                   ←  experimental and historical snapshots
