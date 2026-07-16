@@ -406,7 +406,32 @@ All four dimensions must be healthy. A high-coverage, low-quality Kernel is dang
 
 ---
 
-## 11. What the Kernel Is Not
+## 11. The Repository / Instance Boundary
+
+**The repository distributes the Knowledge Kernel engine; the knowledge belongs to the Kernel owner and remains outside the repository.**
+
+This boundary is architectural, not incidental:
+
+| Repository (public) | Instance (local, `~/knowledge/knowledge-kernel/`) |
+|---------------------|--------------------------------------------------|
+| Code: `cmdb/`, `integrations/`, `scripts/` | Dataset: YAML entities (facts) |
+| Documentation: `docs/` | Evidence: observation logs, telemetry |
+| Tests: `tests/`, `benchmarks/` | Baselines: coverage pilots, gap analyses |
+| Examples: `examples/` (synthetic, anonymized) | Production data: your actual infrastructure |
+| API contract: `pyproject.toml` | Telemetry: `~/.hermes/telemetry/kernel/` |
+
+**Why this matters:**
+
+1. **Reusability:** Anyone can clone the repo without exposing their infrastructure topology.
+2. **Safety:** Sensitive data (IPs, hostnames, MAC addresses, ports, service inventories) never leaves the local instance.
+3. **Separation of concerns:** The repo evolves the *how* (engine, API, patterns); the instance owns the *what* (facts, evidence).
+4. **Independent evolution:** You can refactor your dataset without fork divergence; the repo can add features without touching your data.
+
+**Guiding principle:** If a file describes *how the Kernel works*, it belongs in the repo. If it describes *what exists in your world*, it belongs in the local instance.
+
+---
+
+## 12. What the Kernel Is Not
 
 The definition has evolved:
 
