@@ -1,0 +1,48 @@
+{
+  "description": "Ejemplo sintético de telemetría de grounding — NO contiene datos reales de producción.",
+  "purpose": "Documentar el formato de los eventos de query para desarrolladores que implementen integraciones.",
+  "note": "Los valores son completamente ficticios. La telemetría real contiene información operacional sensible y NO debe commitearse.",
+  "total_questions": 100,
+  "needs_facts_count": 95,
+  "kernel_consulted_count": 92,
+  "total_facts_returned": 340,
+  "total_factual_assertions": 412,
+  "total_grounded_assertions": 398,
+  "by_category": {
+    "infrastructure": {
+      "count": 25,
+      "kernel_consulted": 25,
+      "facts_returned": 80,
+      "assertions": 95,
+      "grounded": 92
+    },
+    "dependencies": {
+      "count": 20,
+      "kernel_consulted": 18,
+      "facts_returned": 45,
+      "assertions": 50,
+      "grounded": 48
+    },
+    "endpoints": {
+      "count": 30,
+      "kernel_consulted": 30,
+      "facts_returned": 90,
+      "assertions": 120,
+      "grounded": 115
+    },
+    "agents": {
+      "count": 25,
+      "kernel_consulted": 19,
+      "facts_returned": 125,
+      "assertions": 147,
+      "grounded": 143
+    }
+  },
+  "kar": 0.92,
+  "fgr": 0.97,
+  "fact_miss_rate": 0.034,
+  "avg_latency_ms": 1.2,
+  "p95_latency_ms": 3.8,
+  "dataset_hash": "00000000",
+  "engine_generation": 1
+}

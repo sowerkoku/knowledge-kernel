@@ -41,3 +41,26 @@ reports/*.json
 # OS
 .DS_Store
 Thumbs.db.venv_*
+
+# =============================================================================
+# SENSITIVE DATA — NEVER COMMIT
+# =============================================================================
+# Local-only infrastructure baselines, telemetry, and backups.
+# These belong in ~/knowledge/knowledge-kernel/ (external dataset),
+# not in the public code repository.
+
+# Archive directory (moved sensitive data from repo)
+_archive-sensitive/
+
+# Temporary/backup files with real data
+*.backup_*
+*.md.bak*
+
+# Hermes runtime telemetry (operational data)
+.hermes/telemetry/
+
+# Historical backups of telemetry
+telemetry/archive/
+
+# Personal/local-only migration snapshots
+migration-snapshots/
