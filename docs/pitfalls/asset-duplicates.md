@@ -14,7 +14,7 @@ applies_to:
 
 ## Example
 
-- `orange-pi-54` (legacy, schema_version 1, RAM 1GB — wrong)
+- `app-server-01` (legacy, schema_version 1, RAM 1GB — wrong)
 - `server-192-168-1-54` (new, schema_version 2, RAM 7.5Gi — accurate)
 
 ## Resolution

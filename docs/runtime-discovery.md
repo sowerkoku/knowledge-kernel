@@ -31,7 +31,7 @@ The old name implies "correct bad data". The new name implies "discover what is 
 ## Entity Model for Discovery
 
 ```
-Asset  (orange-pi-54)
+Asset  (app-server-01)
    ▲
    │ runs_on
    │

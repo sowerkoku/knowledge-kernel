@@ -189,10 +189,10 @@ class TestCICDataset:
         assets = cmdb_list(kind="asset")
         assert len(assets) > 0, "No assets found"
         
-        # Check for Orange Pi devices
+        # Check for App Server devices
         asset_ids = [a["id"] for a in assets]
-        assert any("orangepi" in a.lower() or "device-54" in a for a in asset_ids), \
-            "Orange Pi devices not found"
+        assert any("app-server" in a.lower() or "app-server" in a for a in asset_ids), \
+            "App Server devices not found"
     
     def test_exists_firebird(self):
         """Firebird database is registered."""

@@ -93,10 +93,10 @@ El objetivo no es que el modelo responda más preguntas, sino proporcionar una b
 **Dato verificado empíricamente:**
 ```
 ollama.yaml:
-  relations: [{type: runs_on, target: orange-pi-54}]
+  relations: [{type: runs_on, target: app-server-01}]
 
 cmdb_get('ollama').entity.metadata  → {name, description}  (SIN runs_on)
-cmdb_get('ollama').entity.runs_on   → "orange-pi-54"       ✅ (computed)
+cmdb_get('ollama').entity.runs_on   → "app-server-01"       ✅ (computed)
 ```
 
 Esto NO es un bug — es el diseño funcionando. La relación existe en `relations` y se expone via propiedad computada.

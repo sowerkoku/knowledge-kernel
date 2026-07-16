@@ -11,7 +11,7 @@ applies_to:
 
 ## Symptom
 
-p95 latency >4000ms for simple questions like "¿Qué puertos expone orange-pi-54?"
+p95 latency >4000ms for simple questions like "¿Qué puertos expone app-server-01?"
 
 ## Root cause
 

@@ -136,7 +136,7 @@ def main():
 
     # ---- 9. Batch sequential: 50 mixed calls ----
     print("Running batch: 50 mixed queries...")
-    test_ids = ["ollama", "orange-pi-54", "hermes", "ollama-api", "hermes-ingenierosql"]
+    test_ids = ["ollama", "app-server-01", "hermes", "ollama-api", "hermes-ingenierosql"]
     lats = []
     for i in range(50):
         eid = test_ids[i % len(test_ids)]

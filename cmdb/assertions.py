@@ -103,7 +103,7 @@ def cmdb_context(
     - Risk warnings
     
     Usage:
-        ctx = cmdb_context("hermes-arquitectobi")
+        ctx = cmdb_context("hermes-agent-example")
         
         # Pre-loaded context
         print(f"I run on: {ctx['runs_on']}")

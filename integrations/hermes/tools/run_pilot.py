@@ -35,7 +35,7 @@ def needs_facts(question: str) -> bool:
     keywords = [
         "dónde", "corre", "qué", "depende", "puertos", "expone",
         "perfiles", "hermes", "configurados", "mysql", "ollama",
-        "orange-pi", "agent", "software", "asset", "endpoint"
+        "app-server", "agent", "software", "asset", "endpoint"
     ]
     q_lower = question.lower()
     return any(k in q_lower for k in keywords)
@@ -85,13 +85,13 @@ def execute_query(question: str, category: str) -> Tuple[List[str], int, int, st
             answer_parts.append("MySQL no encontrado en el Kernel")
 
     elif category == "endpoints":
-        # ¿Qué puertos expone orange-pi-54? → cmdb_get + cmdb_list
+        # ¿Qué puertos expone app-server-01? → cmdb_get + cmdb_list
         functions_called.append("cmdb_get")
         functions_called.append("cmdb_list")
-        asset_result = cmdb_get("orange-pi-54")
+        asset_result = cmdb_get("app-server-01")
         if asset_result.exists:
             facts_returned += 1
-            answer_parts.append(f"orange-pi-54 es un asset")
+            answer_parts.append(f"app-server-01 es un asset")
             # Buscar endpoints que corren en este asset
             endpoints = cmdb_list(kind="endpoint")
             for ep in endpoints:
@@ -100,7 +100,7 @@ def execute_query(question: str, category: str) -> Tuple[List[str], int, int, st
                 ep_detail = cmdb_get(ep_id)
                 if ep_detail.exists:
                     for rel in ep_detail.entity.relations:
-                        if rel.get("target") == "orange-pi-54":
+                        if rel.get("target") == "app-server-01":
                             facts_returned += 1
                             host = ep_detail.entity.metadata.get("host", "unknown")
                             port = ep_detail.entity.metadata.get("port", "unknown")
@@ -109,7 +109,7 @@ def execute_query(question: str, category: str) -> Tuple[List[str], int, int, st
             if not any("→" in p for p in answer_parts):
                 answer_parts.append("  (sin endpoints expuestos directamente)")
         else:
-            answer_parts.append("orange-pi-54 no encontrado")
+            answer_parts.append("app-server-01 no encontrado")
 
     elif category == "agents":
         # ¿Qué perfiles Hermes están configurados? → cmdb_list(kind="agent")

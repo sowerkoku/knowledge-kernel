@@ -178,7 +178,7 @@ These become relevant only after the 5 primary indicators show stable patterns i
 | Entity | Why it belongs |
 |--------|----------------|
 | `ollama` | "Where does it run?" — needed before any deployment |
-| `orange-pi-54` | "What runs here?" — needed for impact analysis |
+| `app-server-01` | "What runs here?" — needed for impact analysis |
 | `ollama-api` | "How do agents reach Ollama?" — communication identity |
 | `mysql` | "What depends on the database?" — critical dependency |
 
@@ -230,7 +230,7 @@ This question determines which gaps are truly critical and which are optional im
 The Kernel grows when evidence demands it — not anticipation.
 
 **Good justification:**
-> *"Fact Coverage in infrastructure is low. We cannot answer 'What runs on orange-pi-54?' without manually checking. Adding 3 assets and 8 software entities solves the gap."*
+> *"Fact Coverage in infrastructure is low. We cannot answer 'What runs on app-server-01?' without manually checking. Adding 3 assets and 8 software entities solves the gap."*
 
 **Bad justification:**
 > *"We could add 50 more entities to make it more complete."*

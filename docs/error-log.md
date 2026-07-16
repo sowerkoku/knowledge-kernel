@@ -19,7 +19,7 @@ metadata:
 **Correction:**
 ```python
 # ✅ RIGHT — runs_on is computed from relations at query time
-entity.runs_on   # → "orange-pi-54" — from relations[], not metadata
+entity.runs_on   # → "app-server-01" — from relations[], not metadata
 ```
 
 **Rule:** `metadata.runs_on` does not exist. Use the `runs_on` relation and call `entity.runs_on`.
@@ -43,7 +43,7 @@ relations:
 # ✅ RIGHT — target is an entity ID
 relations:
   - type: runs_on
-    target: orange-pi-54      # asset entity
+    target: app-server-01      # asset entity
 ```
 
 **Rule:** Relations always point to entity IDs. Never literals.
@@ -91,8 +91,8 @@ cmdb_get("server-52")  # doesn't exist
 **Correction:**
 ```python
 # ✅ RIGHT — use current entity IDs
-cmdb_get("ollama").entity.runs_on  # → orange-pi-54
-cmdb_get("orange-pi-54")           # current asset
+cmdb_get("ollama").entity.runs_on  # → app-server-01
+cmdb_get("app-server-01")           # current asset
 ```
 
 **Rule:** Always use entity IDs verified against the current Kernel.
@@ -116,7 +116,7 @@ relations:
 # ✅ RIGHT — docker is a dependency (software), not the host
 relations:
   - type: runs_on
-    target: orange-pi-54     # physical host
+    target: app-server-01     # physical host
   - type: uses
     target: docker          # software dependency
 ```
@@ -142,7 +142,7 @@ relations:
 # ✅ RIGHT — database runs on an asset, depends on MySQL
 relations:
   - type: runs_on
-    target: orange-pi-54
+    target: app-server-01
   - type: uses
     target: mysql
 ```
@@ -254,7 +254,7 @@ endpoint/metabase-ui.yaml    → id: metabase-ui
 
 **Symptom:**
 ```yaml
-# ❌ WRONG — ollama runs on orange-pi-54, not local
+# ❌ WRONG — ollama runs on app-server-01, not local
 metadata:
   network:
     host: localhost
@@ -266,7 +266,7 @@ metadata:
 # ✅ RIGHT — host is the asset where the service runs
 relations:
   - type: runs_on
-    target: orange-pi-54
+    target: app-server-01
 # host comes from the asset's metadata
 ```
 

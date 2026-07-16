@@ -61,7 +61,7 @@ evidence:
   confidence: high
 ```
 
-**Rule 7 — Evidence is append-only:** When a fact changes (e.g., `orange-pi-54` moves from `.54` to `.60`), the new fact replaces the old one. But the evidence trail is never overwritten. Both the old and new observation survive in the YAML history, enabling future audit: *who created this fact, how, when, and can I reproduce it?* This is the difference between a Knowledge Kernel and a simple YAML store.
+**Rule 7 — Evidence is append-only:** When a fact changes (e.g., `app-server-01` moves from `.54` to `.60`), the new fact replaces the old one. But the evidence trail is never overwritten. Both the old and new observation survive in the YAML history, enabling future audit: *who created this fact, how, when, and can I reproduce it?* This is the difference between a Knowledge Kernel and a simple YAML store.
 
 ---
 
@@ -172,7 +172,7 @@ relations:
 ~/knowledge/knowledge-kernel/              ← active dataset v2 (greenfield, 36 entities)
 
 Composition:
-  asset:       5  (orange-pi-54, .53, .52, servidor-pos, router)
+  asset:       5  (app-server-01, .53, .52, pos-server-01, router)
   software:   16  (14 running SSH-verified + firebird + mysql-db-raw stubs)
   endpoint:    9  (all with host/port/protocol from ss -tlnp)
   automation:  1  (sync-firebird-mysql, schedule verified)

@@ -32,17 +32,19 @@ It stores:
 One canonical home per concept. Many agents query it. Always choose it
 over inference, over RAG, and over conversation memory.
 
+---
+
 ## 2. Where does everything live?
 
 ### Canonical paths
 
 | What                    | Where                                           |
 |-------------------------|-------------------------------------------------|
-| Repo (code, package)    | `<repo-root>`                                   |
+| Repo (code, package)    | `<repo-root>` (`~/knowledge-kernel/`)           |
 | Skill location          | `~/.hermes/skills/knowledge-kernel/`            |
 | Skill entrypoint        | `~/.hermes/skills/knowledge-kernel/SKILL.md` (this file) |
 | Dataset (production)    | `<dataset-root>` (YAML entities)                |
-| Documentation (this?)   | `<repo-root>/docs/`                             |
+| **Documentation**       | `<repo-root>/docs/`                             |
 | Hermes tools (wrappers) | `~/.hermes/skills/knowledge-kernel/tools/`       |
 | Tests                   | `<repo-root>/tests/`                            |
 
@@ -64,6 +66,8 @@ export CMDB_DATA_DIR=<dataset-root>
 All modules read from `get_config().data_dir`. See
 `docs/pitfalls/default-path-drift.md`.
 
+---
+
 ## 3. What APIs exist, and when to use each?
 
 ```python
@@ -80,6 +84,14 @@ from cmdb.api import (
 ```
 
 Everything else inside `cmdb/` is **internal** and may change without notice.
+
+> **API Reference**: The canonical, complete documentation of the public
+> API (all functions, return types, usage patterns, best practices,
+> anti-patterns, compatibility) lives in
+> [`docs/api-python.md`](../knowledge-kernel/docs/api-python.md).
+>
+> This skill only lists the entry points. For signatures, examples,
+> and return-type details, read the canonical reference.
 
 ### Decision flow
 
@@ -104,6 +116,8 @@ Question arrives
   the stable category)
 - Do **not** treat missing facts as false — say "unverified"
 - Do **not** modify anything without first running `cmdb_impact(id)`
+
+---
 
 ## 4. Contract — what must never break?
 
@@ -140,7 +154,9 @@ agent can reason on each independently.
 Endpoint `id`s are stable. The fields `host` / `port` / `protocol` describe
 the observed access point and may change without altering the entity ID.
 This lets an endpoint migrate from `192.168.1.50:3306` to
-`192.168.10.10:3306` without breaking relations.
+`192.168.1.54:3306` without breaking relations.
+
+---
 
 ## 5. Structure
 
@@ -153,11 +169,14 @@ docs/                 ← permanent reference
   governance.md        Inclusion test
   schema-v1.md         Entity YAML contract
   domain-model.md      Asset/Software/Endpoint/Evidence
+  api-python.md        **Python API reference (canonical)**
   pitfalls/            One folder per pitfall
   playbooks/           Operational recipes
   history/             Experimental + historical
   releases/            User-facing release notes
 ```
+
+---
 
 ## 6. Links
 
@@ -166,6 +185,8 @@ docs/                 ← permanent reference
 - [`docs/observability.md`](../knowledge-kernel/docs/observability.md) — Metrics framework
 - [`docs/governance.md`](../knowledge-kernel/docs/governance.md) — Inclusion criteria
 - [`docs/schema-v1.md`](../knowledge-kernel/docs/schema-v1.md) — Entity schema
+- [`docs/domain-model.md`](../knowledge-kernel/docs/domain-model.md) — Asset/Software/Endpoint/Evidence
+- **`docs/api-python.md`** — **Python API reference (canonical)**
 - [`docs/pitfalls/`](../knowledge-kernel/docs/pitfalls/) — One file per pitfall
 - [`docs/playbooks/`](../knowledge-kernel/docs/playbooks/) — Operational recipes
 - [`docs/history/`](../knowledge-kernel/docs/history/) — Experimental + historical

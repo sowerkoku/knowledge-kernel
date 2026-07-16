@@ -216,7 +216,7 @@ Memory stores *what happened*. The Kernel stores *what is true*.
 ┌─────────────────────────────────────────┐
 │                 Asset                    │
 │    Where software runs                   │
-│    Example: orange-pi-54                 │
+│    Example: app-server-01                 │
 └─────────────────────────────────────────┘
                     ▲
                     │ runs_on
@@ -293,8 +293,8 @@ cmdb_get("ollama")
   ▼
 entity.id         = "ollama"
 entity.kind       = "software"
-entity.runs_on    = "orange-pi-54"          ← computed property
-entity.relations  = [{type: "runs_on", target: "orange-pi-54"},
+entity.runs_on    = "app-server-01"          ← computed property
+entity.relations  = [{type: "runs_on", target: "app-server-01"},
                     {type: "exposes", target: "ollama-api"}]
 evidence.confidence_level = HIGH
 evidence.confidence_basis = [SCHEMA_VALIDATED, HUMAN_DECLARED]
@@ -303,7 +303,7 @@ evidence.confidence_basis = [SCHEMA_VALIDATED, HUMAN_DECLARED]
 LLM Reasoning
   │
   ▼
-"Ollama runs on orange-pi-54 (verified, HIGH confidence)"
+"Ollama runs on app-server-01 (verified, HIGH confidence)"
 ```
 
 **User:** "What happens if port 11434 fails?"
@@ -432,7 +432,7 @@ export CMDB_DATA_DIR=~/knowledge/knowledge-kernel
 
 # Verify
 python3 -c "from cmdb.api import cmdb_get; print(cmdb_get('ollama').entity.runs_on)"
-# → orange-pi-54
+# → app-server-01
 ```
 
 ---

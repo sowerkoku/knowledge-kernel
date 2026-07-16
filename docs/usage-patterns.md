@@ -42,7 +42,7 @@ if not fact.entity:
     print("Cannot verify — Ollama not in the Kernel")
 
 # Step 2: Ground response
-print(f"Ollama runs on {fact.entity.runs_on}")  # → orange-pi-54
+print(f"Ollama runs on {fact.entity.runs_on}")  # → app-server-01
 print(f"Confidence: {fact.evidence.confidence_level}")
 print(f"Evidence: {fact.evidence.confidence_basis}")
 ```
@@ -195,7 +195,7 @@ all_software = cmdb_list(kind="software")
 running_here = [
     e["id"] for e in all_software
     if any(
-        r["type"] == "runs_on" and r["target"] == "orange-pi-54"
+        r["type"] == "runs_on" and r["target"] == "app-server-01"
         for r in e.get("relations", [])
     )
 ]
@@ -211,7 +211,7 @@ Containers with `--network=host` do not appear in `docker ps --format "{{.Ports}
 ssh carlos@192.168.10.10 'ss -tlnp | grep -E "LISTEN" | grep -v "127.0.0"'
 ```
 
-Known ports on orange-pi-54 (verified with ss + curl):
+Known ports on app-server-01 (verified with ss + curl):
 
 | Container | Port | Verification |
 |-----------|------|-------------|

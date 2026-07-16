@@ -53,10 +53,10 @@ SEED_BANK = {
         "¿Qué depende de MySQL?",
     ],
     "endpoints": [
-        "¿Qué puertos expone orange-pi-54?",
-        "¿Qué puertos expone orange-pi-54?",
-        "¿Qué puertos expone orange-pi-54?",
-        "¿Qué puertos expone orange-pi-54?",
+        "¿Qué puertos expone app-server-01?",
+        "¿Qué puertos expone app-server-01?",
+        "¿Qué puertos expone app-server-01?",
+        "¿Qué puertos expone app-server-01?",
     ],
     "agents": [
         "¿Qué perfiles Hermes están configurados?",
