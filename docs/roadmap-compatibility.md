@@ -56,10 +56,61 @@ The v1.x line accepts only:
 **Allowed in v1.x:**
 
 - Bug fixes
-- Internal optimizations (in-memory indexes, caching)
+- Internal optimizations (in-memory indexes, caching, faster lookups)
 - Documentation improvements
 - New tools added on top of existing API (additive; non-overriding)
 - Dataset content additions (entities can be added; existing IDs are immutable)
+- Telemetry instrumentation (required for adoption evidence)
+- Performance improvements (non-breaking)
+- CLI output enhancements (formatting, verbosity, human readability)
+
+**Frozen ≠ Stagnant**
+
+Frozen contracts mean **consumers can rely on the surface** without breaking changes.
+They do not freeze internal improvements, new capabilities added above the surface,
+or documentation deepening. v1.x can (and should) accumulate evidence of value
+through adoption, performance enhancements, and tool expansions — all without
+violating the contracts listed above.
+
+The design goal: **maximize value delivered to users while minimizing churn for
+existing adopters.** Internal upgrades that don't leak through the API are
+encouraged, not blocked.
+
+### Parallel structure: Knowledge Kernel epistemology ↔ Development governance
+
+The Knowledge Kernel implements a governance model based on:
+
+- **Evidence → Fact** (observation becomes a grounded truth)
+- **Provenance** (trace why the fact is trusted)
+- **Human curation** (gate to prevent spurious discoveries)
+- **Deterministic reasoning** (repeatable inference)
+
+This roadmap applies the same philosophy to **product development**:
+
+- **Evidence of adoption → Decision to release v2.0**
+- **Justification** (migration guide explains **why** each breaking change is necessary)
+- **Maintainer curation** (decision to liberate v2.0, not a checkbox list)
+- **Governed evolution** (change is deliberate, not driven by arbitrary thresholds)
+
+**Design symmetry:** When the product model and the product's own governance
+are structurally aligned, coherence signals maturity. This is not accidental.
+
+### Inflection Point: Invention → Validation
+
+The project's history follows five stages, each resolving questions the previous
+stage could not answer:
+
+| Stage | Core Question | Status in v1.2.0 |
+|---|---|---|
+| **1. Modeling** | What entities and relations exist? | Resolved (36 entities, v2 schema) |
+| **2. Governance** | What evidence validates each fact? | Resolved (8 axioms, evidence model) |
+| **3. Architecture** | What is the public contract? | Resolved (`cmdb.api`, 10 frozen surfaces) |
+| **4. Product** | Is it packaged, documented, stable? | **Resolved** (v1.2 release, docs complete) |
+| **5. Adoption** | Do other agents use it without modification? | **Current active stage** |
+
+**Decision recorded:** Entering v1.x stability means stage 4 is declared **settled**. Returning to stages 1–4 questions ("should we redesign the schema?", "should we restructure the API?", "should we change the relations?") now requires **evidence from adoption** that the current design is inadequate — not abstract debate. This prevents infinite re-litigation.
+
+---
 
 **Prohibited in v1.x:**
 
