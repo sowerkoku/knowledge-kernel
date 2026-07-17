@@ -36,16 +36,69 @@ The v1.x line accepts only:
 - Security patches
 - Documentation improvements
 - Performance improvements that preserve compatibility
+- New tools that don't break existing contracts (additive only)
 
-**Do not change in v1.x:**
+**Frozen contracts — do not change in v1.x:**
 
-| Surface | Identifier | Reason |
+| Surface | Current state | Reason |
 |---|---|---|
-| Python package | `cmdb` | Public import path: `from cmdb.api import …` |
-| Environment variable | `AGENT_CMDB_DATA_DIR` | Active installations depend on it |
-| Default path | `~/agent-cmdb/...` | Backward-compatible default in `config.py`, `migrator.py` |
-| CLI entry point | `cmdb` | Registered in `pyproject.toml` |
-| Distribution name (already migrated) | `knowledge-kernel` | ✅ Done in v1.2 |
+| **Public API** | `cmdb.api` import path; functions `cmdb_get`, `cmdb_exists`, `cmdb_impact`, `cmdb_context`, `cmdb_assert`, `cmdb_search`, `cmdb_list`, `cmdb_validate`, `cmdb_reload`, `cmdb_migrate`, `cmdb_engine_info`, `cmdb_stats` | External agents depend on these signatures |
+| **YAML entity schema** | v2 schema; fields `id`, `kind`, `status`, `metadata`, `relations`, `evidence` | 36 entities validated against this schema |
+| **Relations contract** | `runs_on`, `depends_on`, `part_of` | Minimum-relations principle; aliases prohibited in v1.x |
+| **Evidence/provenance contract** | `Evidence` model: `source`, `observed_at`, `ttl_seconds`, `confidence`, `confidence_basis`, `validation_method` | Consumers parse this shape |
+| **Environment variables** | `CMDB_DATA_DIR`, `AGENT_CMDB_DATA_DIR` | Active installations depend on them |
+| **Dataset structure** | `~/knowledge/knowledge-kernel/<kind>/<entity_id>.yaml` | Backward-compatible default in `config.py`, `migrator.py` |
+| **Internal package** | Module name `cmdb` | Public import path: `from cmdb.api import …` |
+| **CLI entry point** | `cmdb` command | Registered in `pyproject.toml` |
+| **Hermes skill contract** | `~/.hermes/skills/knowledge-kernel/SKILL.md` | Sync test enforces parity with `integrations/hermes/SKILL.md` |
+| **Distribution name** (already migrated) | `knowledge-kernel` | ✅ Done in v1.2 |
+
+**Allowed in v1.x:**
+
+- Bug fixes
+- Internal optimizations (in-memory indexes, caching)
+- Documentation improvements
+- New tools added on top of existing API (additive; non-overriding)
+- Dataset content additions (entities can be added; existing IDs are immutable)
+
+**Prohibited in v1.x:**
+
+- Renaming any field in frozen contracts
+- Adding new relation types (would change the relations contract)
+- Changing evidence model fields
+- Changing dataset folder layout
+- Renaming env vars
+- Modifying the public API surface
+
+---
+
+## Active Focus — Adoption, Performance, Experience
+
+Until v2.0 work begins, the project's primary risk is **product risk**, not
+architectural risk. Design questions ("is the epistemic model correct?") are
+considered settled for the v1.x line.
+
+**Priorities for v1.x iteration:**
+
+1. **Adoption pathway** — Can another agent use the Kernel without additional
+   explanation? Onboarding friction is a real measurement.
+2. **Natural API feel** — Do the function names reflect the questions agents ask?
+   (`cmdb_exists` is readable; `cmdb_assert` is ambiguous.)
+3. **Query frequency observation** — Which tools get called most? Idle tools are
+   design noise.
+4. **Performance bottlenecks** — Where does the system introduce latency?
+   Address non-breaking optimizations first.
+5. **Missing functions** — What adjacent capabilities are needed but absent?
+
+**Signals to collect (telemetry-driven):**
+
+- Frequency of each `cmdb_*` tool invocation
+- Ratio of `cmdb_exists` calls that lead to `cmdb_get`
+- Number of `assert_success=False` results (signal of missing entities)
+- Time-to-answer (latency percentile per operation)
+- Number of distinct agent integrations active
+
+These signals — not aesthetic code reviews — drive the next major version.
 
 ---
 
@@ -83,10 +136,28 @@ The v1.x line accepts only:
 
 Do **not** start v2.0 work until **all** of the following hold:
 
-- [ ] v1.x has been stable for at least one minor release cycle
-- [ ] At least one external downstream consumer has validated the API
-- [ ] Migration guide is drafted (target: `docs/migration-v1-to-v2.md`)
-- [ ] Telemetry confirms real-world adoption is non-zero
+**Time-based:**
+
+- [ ] v1.x has been stable for at least one minor release cycle (≥ v1.3.0)
+
+**Adoption-based (telemetry signals):**
+
+- [ ] At least one external downstream consumer integrated without assistance
+- [ ] ≥ 100 queries logged in telemetry (proves real usage, not just smoke tests)
+- [ ] ≥ 3 distinct `cmdb_*` tools called in production (proves breadth of use)
+- [ ] No support tickets / unknown blockers in last minor cycle
+
+**Documentation-based:**
+
+- [ ] Migration guide drafted (target: `docs/migration-v1-to-v2.md`) — **stub created**, needs changelog anchors and rollback verified.
+- [ ] Changelog template populated with concrete breaking changes
+- [ ] Release notes explain _why_ each breaking change is necessary (user value, not aesthetics)
+
+**Architectural-based:**
+
+- [ ] API surface stable for ≥ 1 minor cycle with no breaking additions
+- [ ] Telemetry confirms performance bottlenecks are addressed where possible
+- [ ] At least one architectural improvement has been completed in v1.x without regression
 
 ---
 
