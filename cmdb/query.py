@@ -1,7 +1,7 @@
 import os
 from typing import Optional, Union
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 import json
 import hashlib
 
@@ -29,6 +29,17 @@ def get_default_entities_dir() -> Path:
 DEFAULT_ENTITIES_DIR = get_default_entities_dir()
 
 
+def _json_default(obj):
+    """Serialize non-JSON-native types (date, datetime) deterministically.
+
+    YAML may parse bare ISO dates as datetime.date / datetime.datetime.
+    Convert both to ISO 8601 strings so the hash is stable across runs.
+    """
+    if isinstance(obj, (date, datetime)):
+        return obj.isoformat()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+
 def _compute_entity_hash(entity: dict) -> str:
     """Compute deterministic hash of entity for change detection."""
     # Only hash the stable fields
@@ -41,7 +52,7 @@ def _compute_entity_hash(entity: dict) -> str:
         "criticality": entity.get("criticality", {}),
         "schema_version": entity.get("schema_version"),
     }
-    serialized = json.dumps(stable, sort_keys=True)
+    serialized = json.dumps(stable, sort_keys=True, default=_json_default)
     return hashlib.sha256(serialized.encode()).hexdigest()[:16]
 
 
