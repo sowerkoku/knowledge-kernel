@@ -305,6 +305,63 @@ print('✅ cmdb_validate passed')
 
 ---
 
+## 14. Bare ISO Dates in YAML Breaking `json.dumps` in Hash Computation
+
+### Error: `TypeError: Object of type date is not JSON serializable`
+
+**Symptom:** `kpi.py` crashes with `TypeError` on `hermes-gateway-53.yaml`. Any call to `cmdb_get()` on entities with bare (unquoted) ISO dates in `metadata.*` fields crashes at hash computation.
+
+**Root cause:** PyYAML parses unquoted ISO-8601 dates as `datetime.date` objects. `_compute_entity_hash()` calls `json.dumps(stable)` with no `default` handler. When `metadata` contains a bare date field (e.g., `started: 2026-07-06`), `json.dumps` raises `TypeError`.
+
+**Affected entity:** `hermes-gateway-53` has `metadata.started: 2026-07-06`.
+
+**Fix:** Added `_json_default()` serializer in `cmdb/query.py`:
+
+```python
+def _json_default(obj):
+    if isinstance(obj, (date, datetime)):
+        return obj.isoformat()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+serialized = json.dumps(stable, sort_keys=True, default=_json_default)
+```
+
+**Commit:** `c956cfe` — `fix(query): serialize date/datetime in entity hash`
+
+---
+
+## 15. Skill ↔ Repo Drift (`~/.hermes/skills/` vs `integrations/hermes/`)
+
+### Error: `test_skill_two_copies_remain_in_sync` fails after non-git tool writes
+
+**Symptom:** `pytest tests/test_doc_governance.py::test_skill_two_copies_remain_in_sync` fails — SKILL.md bytes differ between `~/.hermes/skills/knowledge-kernel/` (11505 bytes) and `~/knowledge-kernel/integrations/hermes/` (11359 bytes).
+
+**Root cause:** The `~/.hermes/skills/` directory has no git tracking. When a non-git tool (Hermes internal process, cron job, external script) regenerates `SKILL.md` without going through the git sync workflow, the skill copy diverges from the repo.
+
+**Evidence:**
+```
+skill:  11505 bytes, modified 2026-07-18 21:23
+repo:   11359 bytes, modified 2026-07-16 21:44
+sha256 mismatch: ebef82... vs fe1738...
+Drift content: duplicate `scripts/` line + spurious `bugfix-datetime-serialization.md` reference
+```
+
+**Direction of truth:** `~/knowledge-kernel/integrations/hermes/SKILL.md` is the git-tracked canonical source. `~/.hermes/skills/` is a working copy that must be synced FROM the repo, never the other way around.
+
+**Fix:** Copy repo → skill and commit the sync:
+```bash
+cp ~/knowledge-kernel/integrations/hermes/SKILL.md ~/.hermes/skills/knowledge-kernel/
+```
+
+**Same drift applies to tools/**: Copy repo → skill to ensure consistency.
+```bash
+cp ~/knowledge-kernel/integrations/hermes/tools/*.py ~/.hermes/skills/knowledge-kernel/tools/
+```
+
+**Prevention:** The `test_skill_two_copies_remain_in_sync` test already guards this. Any drift = test failure. Maintainers must run `pytest tests/` before push.
+
+---
+
 ## Change history
 
 | Date | Version | Change |
