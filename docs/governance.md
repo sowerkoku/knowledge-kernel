@@ -359,3 +359,4 @@ Before merging a documentation change, run the governance test in
 
 **Related:**
 - [`audit-methodology.md`](./audit-methodology.md) — How to audit the Kernel
+- [`evolution-principle.md`](./evolution-principle.md) — How the repo evolves (three actions, four friction questions, three change rates)
