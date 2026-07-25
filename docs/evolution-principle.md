@@ -7,6 +7,20 @@ from this session's work:
 > evolves when recurring questions can no longer be answered
 > correctly with the existing architecture.
 
+A practical corollary of that rule — the question that should
+dominate when considering ANY new component, rule, or
+mechanism — is:
+
+> *"Is there accumulated evidence justifying this addition, or
+> is the addition anticipated because it would feel natural?"*
+
+Evidence-led projects eventually shift their default question
+from *"what's missing?"* to *"what is the evidence that
+justifies this?"*. That shift is the mark of a mature design:
+the burden of proof moves from the existing architecture having
+to justify its limits to the proposal having to justify its
+existence.
+
 This shifts the focus from creativity to *explanatory capacity*.
 The system is judged by how well it answers the questions that
 arise, not by how many abstractions it contains.
