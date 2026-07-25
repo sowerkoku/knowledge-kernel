@@ -7,8 +7,8 @@ commit that touches `integrations/inspector/`.
 
 | Commit | Rules | Contract changes | CSI | Notes |
 |---|---|---|---|---|
+| 545ab6b | 4 (`stale_entity`, `low_confidence_entity`, `missing_runs_on`, `cycles_invalid`) | 0 | ∞ | 4 rules / 0 contract changes; graph traversal validated; cmdb_impact sufficient |
 | 8978530 | 3 (`stale_entity`, `low_confidence_entity`, `missing_runs_on`) | 0 | ∞ | v0.1 contract held across 3 rules; CSI empirico estable |
-| (pending) | — | — | — | — |
 | 2d3d7ba | 2 (`stale_entity`, `low_confidence_entity`) | 0 | ∞ | v0.1 contract held; rule added; 8 new tests green |
 | 335a925 | 1 (`stale_entity`) | 0 | ∞ | Evolution policy + CSI tracking added |
 | 7935cae | 1 (`stale_entity`) | 0 | ∞ | v0.1 frozen; 5 pillars codified |
