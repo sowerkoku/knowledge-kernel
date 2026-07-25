@@ -18,24 +18,13 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+# The platform catalogue is the canonical source of truth. Boundary
+# tests read from it; tooling reads from it; scaffolding reads from it.
+# See platforms.py for the entry point.
+from platforms import PLATFORM_BOUNDARIES, by_package as _platform_by_package
 
-# Platform → canonical location. Each entry is a (package_name, location)
-# pair. The package name is the top-level Python module that consumers/
-# must not import; the location is where that platform-aware code lives.
-# Add a new entry whenever a new platform adapter is introduced.
-PLATFORM_BOUNDARIES = {
-    "hermes":    "integrations/hermes",
-    "openclaw":  "integrations/openclaw",   # future
-    "zeroclaw":  "integrations/zeroclaw",   # future
-    "cursor":    "integrations/cursor",     # future
-    "claude":    "integrations/claude",     # future
-    "langgraph": "integrations/langgraph",  # future
-    "autogen":   "integrations/autogen",    # future
-    "crewai":    "integrations/crewai",     # future
-}
-
-# By-direction registry used by individual tests.
-PLATFORM_PACKAGES = set(PLATFORM_BOUNDARIES.keys())
+# Set views used by individual assertions below.
+PLATFORM_PACKAGES = frozenset(p.package for p in PLATFORM_BOUNDARIES)
 
 CONSUMERS_ROOT = Path(__file__).resolve().parent.parent.parent / "consumers"
 _REPO_ROOT = CONSUMERS_ROOT.parent
@@ -72,7 +61,8 @@ def test_consumers_dont_import_platform_packages():
             top = imp.split(".")[0]
             if top in PLATFORM_PACKAGES:
                 rel = py_path.relative_to(_REPO_ROOT)
-                offenders.append((str(rel), imp, [PLATFORM_BOUNDARIES[top]]))
+                offender_loc = _platform_by_package(top).location
+                offenders.append((str(rel), imp, [offender_loc]))
 
     if offenders:
         msgs = [f"{f}: imports {m} ({e[0]})" for f, m, e in offenders]
@@ -127,9 +117,11 @@ def test_consumers_are_platform_agnostic():
         rel = py_path.relative_to(_REPO_ROOT)
         for imp in _imports_in_file(py_path):
             top = imp.split(".")[0]
-            # Platform packages: tracked in PLATFORM_PACKAGES.
+            # Platform packages: tracked in PLATFORM_PACKAGES via the
+            # canonical catalogue in platforms.py.
             if top in PLATFORM_PACKAGES:
-                offenders.append((str(rel), imp, PLATFORM_BOUNDARIES[top]))
+                entry = _platform_by_package(top)
+                offenders.append((str(rel), imp, entry.location))
                 continue
             # Cross-layer bleed: anything from integrations/ is suspect.
             if imp.startswith("integrations."):

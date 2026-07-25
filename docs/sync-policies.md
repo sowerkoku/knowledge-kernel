@@ -1,22 +1,24 @@
 # Synchronisation policies
 
-The Knowledge Kernel repo follows a single direction of trust:
+## Source of Truth Principle
 
-    repo  ─── pushes to ──>  origin (GitHub)
-    repo  ─── deploys to ──>  runtime (~/.hermes/skills/...)
+**The repository is the only canonical source of truth.** Everything
+else — runtime skill files, deployed scripts, generated docs —
+is a *derivative*.
 
-Anything that changes the repo **must** come from the repo, not from
-the runtime. This file documents why and what to do if the runtime
-ever drifts.
+Consequence:
 
-## Sync direction
+    repo  ─── is canonical
+    runtime, scripts, deployed artifacts  ─── are derivatives
 
-| Direction | Description | Status |
-|---|---|---|
-| `repo -> origin`      | git push | normal |
-| `repo -> runtime`     | sync SKILL.md, deploy updated integration | normal |
-| `runtime -> origin`   | git pull (read-only readback, not changes) | normal |
-| `runtime -> repo`     | inverse sync | **exception** |
+This is not a preference; it is the project's structural commitment.
+Sync flows must respect it:
+
+| Direction | Status |
+|---|---|
+| `repo -> origin` (push)               | normal |
+| `repo -> runtime` (deploy)            | normal |
+| `runtime -> repo` (back-fill)         | **exception, never default** |
 
 ## Why `runtime -> repo` is exceptional
 
@@ -33,6 +35,11 @@ running agent host are typically:
 Allowing `runtime -> repo` as a normal flow **leaks these into the
 official record** without the discipline that the repo enforces
 (commits with messages, tests, CI, code review).
+
+**Memory aim**: future readers should remember the *principle*
+("repo is canonical; runtime is derived"), not just the *flow*
+("we usually copy files from X to Y"). The flow is a consequence;
+the principle is the source.
 
 ## When `runtime -> repo` does happen
 
