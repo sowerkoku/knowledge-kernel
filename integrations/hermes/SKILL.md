@@ -10,11 +10,29 @@ tags: [grounding, knowledge-kernel, deterministic-factual-substrate, facts, infr
 
 # knowledge-kernel Skill
 
-**Decide a question with grounding:**
+> **Decide a question with grounding:**
 
 > 1. Does the Kernel have it? Query it.
 > 2. Does the Kernel have the path to observe it? Query the path, then observe.
 > 3. Otherwise: say "I don't have grounds to answer."
+
+---
+
+## Measurement planes
+
+The ecosystem tracks three distinct planes. Conflating them loses
+information about which layer is under pressure:
+
+| Plane | What it measures | Indicator | Where |
+|---|---|---|---|
+| **Inspector contract** | Is the Inspector's Rule/Finding/KernelAPI contract sufficient? | CSI = rules : contract_changes | `consumers/inspector/CSI.md` |
+| **Kernel data model** | Does the model express the phenomena the Inspector needs? | EP (Expressivity Pressure) events | `consumers/inspector/CSI.md` + `NOTES.md` |
+| **Dataset health** | What is the current state of the stored knowledge? | Finding counts per run | JSON reports only |
+
+CSI is expressed as `N : M` (rules : contract_changes), never as `∞`.
+PI opening for EP events is **recurrence-based**, not threshold-based.
+See [`references/inspector-pattern.md`](references/inspector-pattern.md) for
+the full Inspector methodology including the EP recurrence protocol.
 
 ---
 
@@ -141,6 +159,7 @@ Question arrives
   preferred over drawing attention to historical data no longer in HEAD.
 - Do **not** store bare (unquoted) ISO dates in YAML `metadata.*` fields. PyYAML parses them as `datetime.date` objects. When `_compute_entity_hash()` calls `json.dumps()`, it crashes with `TypeError: Object of type date is not JSON serializable`. Always quote dates in YAML: `started: "2026-07-06"` not `started: 2026-07-06`. Fix in commit `c956cfe` (`cmdb/query.py: _json_default` serializer).
 - Do **not** treat `~/.hermes/skills/knowledge-kernel/` as the source of truth. This directory has **no git tracking**. Any non-git tool (Hermes process, cron job, external script) that writes there causes the SKILL.md and tools to drift from the git-tracked canonical source in `~/knowledge-kernel/integrations/hermes/`. **Sync direction is always: repo → skill.** See [`references/skill-repo-sync.md`](references/skill-repo-sync.md).
+- Do **not** state a change as done until evidence exists. `"Edición lista"` or `"Convergencia demostrada"` are claims, not facts. When a change is claimed, show `git diff`, byte hashes, or test output — not a narrative description. The next agent must be able to verify the claim without trusting the speaker. See [`references/public-api-audit-jul-2026.md`](references/public-api-audit-jul-2026.md) for the worked example (2026-07-24, commits `e0e9d64` → `7935cae`).
 
 ---
 
@@ -246,6 +265,33 @@ Endpoint `id`s are stable. The fields `host` / `port` / `protocol` describe
 the observed access point and may change without altering the entity ID.
 This lets an endpoint migrate from `192.168.1.50:3306` to
 `192.168.1.54:3306` without breaking relations.
+
+### Invariant 6 — Documentation Authority Hierarchy
+
+When multiple documents describe the same surface and contradict,
+authority is resolved by rank, not by majority:
+
+```
+1. cmdb/api.py:__all__                       ← normative (the surface itself)
+2. docs/api-python.md                        ← canonical reference (derived)
+3. README.md, integrations/hermes/SKILL.md   ← derived documentation
+4. ~/.hermes/skills/knowledge-kernel/SKILL.md ← runtime artifact, never authoritative
+```
+
+**Default action when a discrepancy is found:** fix the documentation
+to match `cmdb/api.py:__all__`. Touching code to accommodate docs
+requires a real defect + breaking-change justification.
+
+**Enforced by test:** `tests/test_doc_governance.py::test_skill_two_copies_remain_in_sync`
+asserts the repo-side and runtime-side SKILL.md are byte-identical.
+A red test is **evidence of an unresolved governance decision**, not
+noise to suppress. Resolve the decision before relaxing the test.
+
+Procedure when the test fails: backup the runtime copy first, classify
+each diff block (correction / operational knowledge / error), then sync
+in the appropriate direction. See
+`references/public-api-audit-jul-2026.md` for the worked example
+(commit `e0e9d64`, 2026-07-24).
 
 ---
 
@@ -358,8 +404,12 @@ See **[`references/runtime-compatibility-cleanup.md`](references/runtime-compati
 - [`docs/governance.md`](../knowledge-kernel/docs/governance.md) — Inclusion criteria
 - [`docs/schema-v1.md`](../knowledge-kernel/docs/schema-v1.md) — Entity schema
 - [`docs/domain-model.md`](../knowledge-kernel/docs/domain-model.md) — Asset/Software/Endpoint/Evidence
-- **`docs/api-python.md`** — **Python API reference (canonical)**
+- [`docs/api-python.md`](../knowledge-kernel/docs/api-python.md) — **Python API reference (canonical)**
 - [`docs/pitfalls/`](../knowledge-kernel/docs/pitfalls/) — One file per pitfall
 - [`docs/playbooks/`](../knowledge-kernel/docs/playbooks/) — Operational recipes
 - [`docs/history/`](../knowledge-kernel/docs/history/) — Experimental + historical
 - [`docs/releases/`](../knowledge-kernel/docs/releases/) — Release notes
+- [`references/inspector-pattern.md`](references/inspector-pattern.md) — Inspector pattern: falsable,
+  deterministic findings; companion to `public-api-audit-jul-2026.md`
+- [`references/pi-01-operational-knowledge.md`](references/pi-01-operational-knowledge.md) — Research
+  programme PI-01: deciding when operational knowledge deserves a component
