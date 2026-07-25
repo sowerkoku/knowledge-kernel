@@ -88,6 +88,27 @@ straightforward to tell apart:
 That distinction, more than any single component, will determine
 the project's stability over time.
 
+### Three classes of assets
+
+Active assets in this repo fall into three categories, and
+they are not equivalent:
+
+| Class | Examples | Demonstrates value by |
+|---|---|---|
+| **Code** | `runs_diff.py`, rules, wrappers | Executing correctly. |
+| **Constraints** | tests, contract tests, boundary tests, contracts | **Forbidding** entire classes of errors. |
+| **Criterios** | `evolution-principle.md`, governance rules, the inverted question | **Changing decisions made before any code is written.** |
+
+The third class is the least visible and the only one whose
+principal effect is the *absence* of future code. That absence
+is not a void: it is "justified non-software" — a decision
+taken under an explicit criterion, which is a result in its
+own right. Trying to convert this into a formal KPI is a
+category mistake: the better the method works, the less data
+there is to measure it directly. This is a common property of
+preventive mechanisms — their success appears as an absence
+of incidents, not as an abundance of events.
+
 ## Three rates of change
 
 The system naturally separates into three temporal scopes. Each
@@ -135,3 +156,27 @@ over-construction (adding abstractions in anticipation) and
 paralysis (refusing abstractions even when evidence demands them).
 Stability becomes a property the system can have, not a stance its
 maintainers must hold.
+
+## Longitudinal audit
+
+Technical architecture is reviewable in an afternoon; the
+**evolution architecture** is not. A reviewer arriving in
+six months will have to inspect commits, rejected proposals,
+contract changes and their surrounding evidence — the
+architecture of evolution only becomes visible across history.
+
+The useful question for such a reviewer is therefore:
+
+> *"Are the decisions taken during this period still
+> coherent with the process the project itself declares?"*
+
+That question is more demanding than any static review of
+the current architecture. If the answer is *yes*, the
+project has succeeded: many observations are recorded,
+promotions are rare, contract changes are rarer still, and
+each change carries a reconstructible chain of evidence
+backward through the previous runs. That pattern — many
+records, few promotions, very few contract changes,
+reconstructible chains — is the empirical signature of a
+working evolution architecture. It can only be confirmed
+through extended use.

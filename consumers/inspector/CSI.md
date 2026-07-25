@@ -24,6 +24,7 @@ appears in.
 
 | Commit | Rules | Contract changes | CSI | EP | Notes |
 |---|---|---|---|---|---|
+| 62c50da | 5 | 0 | 5 : 0 | 0 | docs: invert the default question + codify three classes of assets + longitudinal audit criterion. Doctrine only; no rule or contract change. |
 | 48b1928 | 5 | 0 | 5 : 0 | 0 | docs: anchor evolution-principle.md + log principle codification in CSI (pure documentation, no rule/contract change) |
 | e4c9403 | 5 | 0 | 5 : 0 | 0 | docs: codify the three-action chain (Register / Compare / Document promotion) — architecture docs only, no rule or contract change |
 | 779387c | 5 (stale_entity, low_confidence_entity, missing_runs_on, cycles_invalid, no_declared_relations) | 0 | 5 : 0 | 0 | Phase 2 start (global analysis); no_declared_relations validates policy filters |
