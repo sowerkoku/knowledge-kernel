@@ -4,6 +4,25 @@ This file is **not** part of the Inspector contract. It records
 observations made during rule implementation that are useful to the
 next implementer but do not change v0.1.
 
+## Expressivity Pressure (EP) — how to record
+
+When a rule must be reframed because the Kernel model does not
+express the intended phenomenon, record it both in **CSI.md**
+(under "Historical EP events") and inline below with what was
+attempted and what the model lacked.
+
+EP is *informational*, not a verdict. A growing EP count alongside
+an unchanged contract is signal about the **Kernel model**, not the
+**Inspector contract**. These two developments have very different
+prescriptions:
+
+  - High EP → consider whether the Kernel's data model needs
+    additional fields. That is PI-N territory, not v0.2-of-the-Inspector.
+  - High CSI denominator with N contract changes → consider whether
+    the Inspector contract needs revision. That is v0.2-of-the-Inspector.
+
+Keep these separations.
+
 ## Confidence granularity (2026-07-24)
 
 **Observation**: the public Knowledge Kernel API exposes confidence
