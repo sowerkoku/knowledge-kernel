@@ -83,7 +83,10 @@ API later, the candidates return to the backlog.
 ## Audit findings — integrations/hermes/tools/* (2026-07-25)
 
 Single audit run, NOT enough to constitute EP. Listed here so
-future audits can detect recurrence.
+future audits can detect recurrence. The full report organised
+by plane (Tool / Dataset / Performance) is at:
+
+    docs/audits/2026-07-25-hermes-tools.md
 
 ### run_pilot.py — L3 iteration results
 
