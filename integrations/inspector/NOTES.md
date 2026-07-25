@@ -23,6 +23,35 @@ prescriptions:
 
 Keep these separations.
 
+## Recurrence protocol — when to open a PI
+
+The decision to open a research programme from EP events is
+*pattern-based*, **not** number-based. A fixed numeric threshold
+(e.g. "EP ≥ 3") would be arbitrary. Recurrence of an underlying
+phenomenon is the signal.
+
+Sequence:
+
+1. **EP isolated** → record the event with type (EP-R, EP-N,
+   EP-C, EP-K...) and a short reason. Keep everything in CSI.md.
+2. **Several EP of the same type** → formulate a hypothesis about
+   the model's missing representation (analogous to a
+   PI hypothesis). Document it; do **not** open a PI.
+3. **Same hypothesis recurs across different rules** → at this
+   point the phenomenon is no longer incidental. Open a PI.
+4. **PI accumulates evidence** → decide whether the model needs
+   an additional field/concept. Only then does the Kernel v0.x
+   revision start.
+
+A single EP event is not a PI. A second similar event is a
+*signal*, also not a PI. The third event of the same shape is the
+smallest piece of evidence that *might* justify a PI — and even
+then, the PI is opened, not a model revision. Revisions follow
+PI conclusions, not PI openings.
+
+This mirrors the PI-01 protocol that already governs Agent
+Workspace hypotheses.
+
 ## Confidence granularity (2026-07-24)
 
 **Observation**: the public Knowledge Kernel API exposes confidence
