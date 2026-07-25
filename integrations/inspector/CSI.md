@@ -64,6 +64,9 @@ is for at-a-glance reference; full evidence lives below.
 
 | Field | Value |
 |---|---|
+| ID | EP-001 |
+| Title | Relation-level confidence not representable |
+| Status | cerrado (closed — not waiting for more evidence; no recurrence has surfaced) |
 | Type | EP-R (renamed) + EP-N (narrowed scope) |
 | Date | 2026-07-24 |
 | Inspector commit | 2d3d7ba |
@@ -75,4 +78,5 @@ is for at-a-glance reference; full evidence lives below.
 | Contract change | No |
 | Inspector change | No |
 | PI opened | No (isolated event, no recurrence yet) |
+| Reopen criteria | A second rule attempting per-relation evidence with the same limitation, in the same period. Add `EP-002` and escalate to hypothesis. |
 
