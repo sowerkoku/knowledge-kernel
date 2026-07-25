@@ -27,7 +27,7 @@ information about which layer is under pressure:
 |---|---|---|---|
 | **Inspector contract** | Is the Inspector's Rule/Finding/KernelAPI contract sufficient? | CSI = rules : contract_changes | `consumers/inspector/CSI.md` |
 | **Kernel data model** | Does the model express the phenomena the Inspector needs? | EP (Expressivity Pressure) events | `consumers/inspector/CSI.md` + `NOTES.md` |
-| **Dataset health** | What is the current state of the stored knowledge? | Finding counts per run | JSON reports only |
+| **Dataset health** | What is the current state of the stored knowledge? | Finding counts per run | JSON reports via `consumers/inspector/tools/runs_diff.py` |
 
 CSI is expressed as `N : M` (rules : contract_changes), never as `∞`.
 PI opening for EP events is **recurrence-based**, not threshold-based.
@@ -65,6 +65,25 @@ over inference, over RAG, and over conversation memory.
 | **Documentation**       | `<repo-root>/docs/`                             |
 | Hermes tools (wrappers) | `~/.hermes/skills/knowledge-kernel/tools/`       |
 | Tests                   | `<repo-root>/tests/`                            |
+
+### Structural layers
+
+The repo is organized into three layers with distinct dependencies:
+
+```
+kernel/        ← the model; no dependencies upward
+consumers/     ← framework-agnostic consumers of the public API
+                inspector/, telemetry/ — run from any agent or CI
+integrations/  ← platform-specific adapters; depend on external platform
+                hermes/ — depends on Hermes
+```
+
+**`consumers/` vs `integrations/`** is an architectural boundary enforced
+by `tests/test_consumers_boundary.py`. A consumer must not import from
+any `integrations/*` package (hermes, openclaw, etc.) or from the
+integrations layer itself. If a component needs a platform, it belongs
+in `integrations/`, not `consumers/`. This keeps `consumers/` reusable
+across agents.
 
 ### Configuration
 

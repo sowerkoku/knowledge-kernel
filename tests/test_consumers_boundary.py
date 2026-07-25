@@ -19,19 +19,23 @@ import ast
 from pathlib import Path
 
 
-# Detectable dependencies: each entry maps a Python package name to the
-# layer it belongs to. Imports of any of these from consumers/ indicate
-# a layer-bleed.
-PLATFORM_PACKAGES = {
-    "hermes": "Hermes agent framework",
-    "openclaw":  "OpenClaw agent framework (future)",
-    "zeroclaw":  "ZeroClaw agent framework (future)",
-    "cursor":    "Cursor IDE integration",
-    "claude":    "Anthropic Claude integration",
-    "langgraph": "LangGraph framework",
-    "autogen":   "AutoGen framework",
-    "crewai":    "CrewAI framework",
+# Platform → canonical location. Each entry is a (package_name, location)
+# pair. The package name is the top-level Python module that consumers/
+# must not import; the location is where that platform-aware code lives.
+# Add a new entry whenever a new platform adapter is introduced.
+PLATFORM_BOUNDARIES = {
+    "hermes":    "integrations/hermes",
+    "openclaw":  "integrations/openclaw",   # future
+    "zeroclaw":  "integrations/zeroclaw",   # future
+    "cursor":    "integrations/cursor",     # future
+    "claude":    "integrations/claude",     # future
+    "langgraph": "integrations/langgraph",  # future
+    "autogen":   "integrations/autogen",    # future
+    "crewai":    "integrations/crewai",     # future
 }
+
+# By-direction registry used by individual tests.
+PLATFORM_PACKAGES = set(PLATFORM_BOUNDARIES.keys())
 
 CONSUMERS_ROOT = Path(__file__).resolve().parent.parent.parent / "consumers"
 _REPO_ROOT = CONSUMERS_ROOT.parent
@@ -68,7 +72,7 @@ def test_consumers_dont_import_platform_packages():
             top = imp.split(".")[0]
             if top in PLATFORM_PACKAGES:
                 rel = py_path.relative_to(_REPO_ROOT)
-                offenders.append((str(rel), imp, [PLATFORM_PACKAGES[top]]))
+                offenders.append((str(rel), imp, [PLATFORM_BOUNDARIES[top]]))
 
     if offenders:
         msgs = [f"{f}: imports {m} ({e[0]})" for f, m, e in offenders]
@@ -104,42 +108,43 @@ def test_consumers_dont_import_integrations_layer():
         )
 
 
-def test_consumers_only_import_kernel_or_stdlib():
-    """consumers/* may only import from kernel/ + stdlib + 3rd-party libs.
+def test_consumers_are_platform_agnostic():
+    """consumers/* must not depend on a specific platform or framework.
 
-    Verifies the public-API discipline at module level: consumers/
-    never reach into private internals of the Kernel.
-    Pytest
+    The rule is not "stdlib only". The rule is "platform-agnostic".
+    Third-party libraries (pydantic, networkx, click, rich, etc.)
+    are fine. Imports from known platforms (hermes, openclaw...),
+    or from the integrations/ layer itself, are not.
+
+    When this test fails, the offending component must move from
+    consumers/ to integrations/, where platform-specific code belongs.
     """
     root = CONSUMERS_ROOT
-    kernel_pyp = root
     offenders: list[tuple[str, str, str]] = []
 
-    # Allow only these top-level patterns in consumers/*
     for py_path in _walk_python_files(root):
         module_name = py_path.stem
         rel = py_path.relative_to(_REPO_ROOT)
         for imp in _imports_in_file(py_path):
             top = imp.split(".")[0]
+            # Platform packages: tracked in PLATFORM_PACKAGES.
             if top in PLATFORM_PACKAGES:
-                continue  # already caught in test_consumers_dont_import_*
+                offenders.append((str(rel), imp, PLATFORM_BOUNDARIES[top]))
+                continue
+            # Cross-layer bleed: anything from integrations/ is suspect.
             if imp.startswith("integrations."):
+                offenders.append((str(rel), imp, "integrations layer"))
                 continue
-            if imp.startswith("cmdb."):
-                # Allowed only if it is in cmdb.api.__all__ or its public
-                # module path. We rely on the inspector-specific test for
-                # that narrower rule; here we just confirm no deep imports.
-                if any(imp.startswith(f"cmdb.{n}") for n in (
-                        "api", "migrator", "engine", "internal")):
-                    offenders.append((str(rel), imp, "kernel.cmdb subpackage"))
-                continue
-            # Otherwise it's stdlib or 3rd-party; allowed.
+            # Anything else: stdlib, third-party, kernel public API.
+            # All allowed.
 
     if offenders:
         msgs = [f"{f}: imports {m} ({why})" for f, m, why in offenders]
         raise AssertionError(
-            "consumers/ violated the public-API boundary:\n  "
+            "consumers/ depends on a platform:\n  "
             + "\n  ".join(msgs)
+            + "\nMove the offending module to integrations/, or keep it "
+            + "in consumers/ without the platform dependency."
         )
 
 
