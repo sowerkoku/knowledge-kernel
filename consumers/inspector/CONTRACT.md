@@ -127,8 +127,8 @@ change.
 ## Verification recipe
 
 ```bash
-PYTHONPATH=integrations/inspector python3 -m pytest \
-    integrations/inspector/tests/test_inspector.py -v
+PYTHONPATH=consumers/inspector python3 -m pytest \
+    consumers/inspector/tests/test_inspector.py -v
 ```
 
 Expect 9/9 green. A regression in any of them indicates a contract
@@ -136,7 +136,7 @@ change has been introduced without this document being updated.
 
 ## Evolution policy (frozen)
 
-Any future change to `integrations/inspector/` MUST be classified into
+Any future change to `consumers/inspector/` MUST be classified into
 exactly one of the following three categories. The classification is a
 prerequisite for proposing the change.
 

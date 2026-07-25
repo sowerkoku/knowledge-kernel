@@ -2,7 +2,7 @@
 """CLI entry point for the Knowledge Inspector.
 
 Usage:
-    PYTHONPATH=integrations/inspector python3 -m inspector.cli \\
+    PYTHONPATH=consumers/inspector python3 -m inspector.cli \\
         --stale-after-days 90 --output /tmp/inspector_report.json
 
 Reads entities from the Knowledge Kernel via cmdb_list, runs each

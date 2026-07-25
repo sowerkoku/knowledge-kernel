@@ -14,10 +14,10 @@ import importlib.util
 import sys
 
 # Load runs_diff as a standalone module without polluting sys.path.
-# tools/ is at integrations/inspector/tools/ (sibling of the inspector
+# tools/ is at consumers/inspector/tools/ (sibling of the inspector
 # package). We load it directly from its absolute location.
 _tools_path = (
-    "/home/carlos/knowledge-kernel/integrations/inspector/tools/runs_diff.py"
+    "/home/carlos/knowledge-kernel/consumers/inspector/tools/runs_diff.py"
 )
 _spec = importlib.util.spec_from_file_location("inspector.tools.runs_diff", _tools_path)
 _runs_diff = importlib.util.module_from_spec(_spec)

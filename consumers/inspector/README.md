@@ -18,7 +18,7 @@ it is a consumer of that contract.
 
 ```bash
 # From the repo root:
-PYTHONPATH=integrations/inspector python3 -m inspector.cli \
+PYTHONPATH=consumers/inspector python3 -m inspector.cli \
     --stale-after-days 90 \
     --output /tmp/inspector_report.json
 ```
