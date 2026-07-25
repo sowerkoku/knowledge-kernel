@@ -79,3 +79,38 @@ does not exist).
 These are technical observations, **not** architectural proposals.
 No PI is opened for them. If the Kernel grows the required public
 API later, the candidates return to the backlog.
+
+## Audit findings — integrations/hermes/tools/* (2026-07-25)
+
+Single audit run, NOT enough to constitute EP. Listed here so
+future audits can detect recurrence.
+
+### run_pilot.py — L3 iteration results
+
+- Total: 16 questions across 4 categories.
+- KAR (Kernel Adoption Rate) global: 100%.
+- FGR (Fact Grounding Rate) global: 100%, but by-category:
+  - infrastructure: 0% (4 questions, 0 facts)
+  - dependencies: 0% (4 questions, 0 facts)
+  - endpoints: 0% (4 questions, 0 facts)
+  - agents: 100% (4 questions, 6 facts, 28 assertions)
+- P95 latency: 815ms — target was 250ms; criterion NOT met.
+
+### Dataset state observed
+
+- 33 validation warnings at the YAML validation layer.
+- Cold-start latency in `cmdb_get` (~815ms first call, ~0ms
+  subsequent): suggests cache miss — not a contract issue.
+- "no encontrado" answers for Ollama, MySQL, app-server-01 are
+  accurate — those entities are genuinely absent from the
+  dataset.
+
+### Status
+
+These are run-time findings, **not** EP events. No rule was
+framed and limited by the Kernel model — the dataset genuinely
+lacks the data. Tools themselves worked correctly against the
+live dataset_hash=157d23fa.
+
+To qualify for promotion, a recurrence of these patterns across
+later audits would be needed.
