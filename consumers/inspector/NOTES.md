@@ -301,3 +301,66 @@ re-evaluation — but even then, PI-01 is a research programme, not a
 binary switch. The evaluation belongs to the PI process, not to this
 notes file.
 
+---
+
+## Architectural baseline (Inspector subsystem)
+
+**Established at commit `b88fc95`** — Inspector subsystem reached an
+architectural baseline. Not a performance baseline; an architectural
+one. The distinction matters:
+
+- **Architectural baseline**: the structural properties of the
+  subsystem are stable and the responsibilities are well delimited.
+- **Performance baseline**: latency numbers (lifecycle / queries /
+  context) are recorded separately in `benchmarks/*_results.json`
+  and live with the data they describe.
+
+### What this baseline claims
+
+- One owner per concept:
+  - `identity` → identity algorithm
+  - `evidence` → Evidence construction
+  - `report` → orchestration + serialisation
+  - `kernel_api` → gateway to `cmdb.api`
+  - `rules/` → each individual rule
+  - `cli` → command-line entry point
+- No textual or conceptual duplications of any consequence.
+- Dependency graph between Inspector modules is acyclic and respects
+  the kernel_api ↔ report ↔ rules layering.
+- Deferments recorded with explicit reactivation criteria:
+  - `_StubEvidence` × 5 in tests — revisit when rule count justifies
+    a shared fixture (rule of thumb: 10–15 rules).
+  - `no_declared_relations.py` size (228 lines) — observe; revisit
+    if cyclomatic complexity or function count becomes the limiting
+    factor, not line count.
+  - Mechanism names vs conceptual names in `identity.py`:
+    `finding_key` and `finding_identity` are public (domain
+    concepts); `_stable_finding_hash` is private (implementation
+    detail behind the conceptual API).
+- CSI = 5 : 0 — no contract changes in this baseline.
+- Contract v0.1 — unchanged. Governance rules — unchanged.
+
+### Re-entering the Inspector after this baseline
+
+The Inspector may be revisited when a **new functional requirement**
+appears (e.g. a new rule, a new evidence shape, a new consumer of
+the run output). It should **not** be revisited for "looking for
+more refactors without evidence", because the rationale for that
+mode of work is exhausted at this baseline.
+
+If a revisit produces a change that affects the public contract
+(`Rule`, `Evidence`, `Report`, `Finding`, the `Rule` Protocol
+shape, the JSON output of `Report.to_dict()`, or the `finding_id`
+format) it constitutes a contract change and must be promoted in
+`CSI.md` with a new version label.
+
+If a revisit produces a refactor that does not affect the contract
+but reorganises internals, it is a maintenance change and should
+record what property it preserves (a behaviour, an invariant, a
+number, a format) and how that property is verified (a test, a
+benchmark, a doc test).
+
+This baseline is the **reference state** against which subsequent
+Inspector changes are measured. It does not freeze the code — it
+freezes the responsibility claims above.
+
