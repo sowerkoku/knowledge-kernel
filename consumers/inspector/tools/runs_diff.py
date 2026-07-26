@@ -189,11 +189,6 @@ def _index_findings_by_key(findings: list[dict]) -> dict[str, dict]:
     return {finding_key(f): f for f in findings}
 
 
-def _index_findings(findings: list[dict]) -> dict[str, dict]:
-    """Index findings by finding_id (observation identity)."""
-    return {finding_id(f): f for f in findings}
-
-
 def _categorise_change(prev_f: dict, curr_f: dict, result: RunDiff):
     """Inspect a stable finding_key and record any property changes."""
     fkey = finding_key(prev_f)
