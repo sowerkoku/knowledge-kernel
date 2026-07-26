@@ -209,27 +209,49 @@ representation held by `KernelEngine`.
 #### Test de invariancia funcional (antes del rendimiento)
 
 Cuando se implemente el refactor, el test primario es de **invariancia**,
-no de rendimiento:
+no de rendimiento.
+
+**Propósito**: verificar que la **semántica observable** de
+`cmdb_context` no cambia durante el refactor. No es una igualdad
+byte a byte.
+
+**Forma**:
 
 ```
-# Ground truth: el comportamiento antes del cambio
-old = cmdb_context("ollama")          # comportamiento observado
-
-# Hipótesis: el comportamiento después del cambio es equivalente
+# Baseline: comportamiento previo del código antes del refactor
+old = cmdb_context("ollama")
 new = refactored_cmdb_context("ollama")
 
 assert old.keys() == new.keys()       # mismo contrato de claves
-assert old == new                     # equivalencia funcional exacta
+assert normalize(old) == normalize(new)   # equivalencia semántica
 ```
 
-Este test protege el **contrato observable** de `cmdb_context` durante
-el cambio. El benchmark mide el efecto secundario; no tiene peso sobre
-la decisión de aceptación.
+**Importante**:
 
-Solo después de que el test de invariancia passe se ejecutan los
-benchmarks (lifecycle / queries / context) para documentar el
-before/after. Si la latencia no baja, pero la invariancia se cumple,
-el cambio igual se acepta — porque elimina una violación arquitectónica.
+1. **`normalize(...)` es obligatorio si el dict contiene campos no
+   deterministas** (`generated_at`, timestamps, IDs efímeros, orden
+   no garantizado de listas, contadores, etc.). La normalización
+   compara la semántica observable, no la igualdad byte a byte.
+2. **El comportamiento previo es baseline de regresión, salvo que
+   exista una decisión explícita de cambiar el contrato.** Hoy
+   ambos coinciden; pero un bug histórico en `cmdb_context` no debe
+   quedar congelado como especificación permanente. Si durante el
+   refactor se descubre que el baseline codifica un bug, la decisión
+   de corregir ese bug pertenece a una promoción registrada en CSI,
+   no a un test de invariancia que fallaría silenciosamente.
+
+**Jerarquía**:
+
+- Test de claves (`keys`) → **obligatorio**: protege el contrato
+  nombrado en `docs/api-python.md`.
+- Test de equivalencia semántica (`normalize(old) == normalize(new)`)
+  → **obligatorio** sobre los campos del contrato, excluyendo los
+  no deterministas.
+- Benchmark de rendimiento (`lifecycle_results.json`,
+  `queries_results.json`, `context_results.json`) → **consecuencia
+  documentada**, no objetivo del cambio. Si la latencia no baja pero
+  la invariancia se cumple, el cambio se acepta igualmente: elimina
+  una violación arquitectónica, no optimiza una consulta.
 
 #### Out of scope (explicitly)
 
