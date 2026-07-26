@@ -396,3 +396,23 @@ Each reactivation references the triggering event number above
 and the artefact that surfaced it. This keeps the reopening
 discipline auditable rather than informal.
 
+#### Note on generalisation
+
+This baseline is **one instance** of a possible pattern. The
+pattern itself — "contract + architectural baseline + explicit
+reactivation triggers + evidence-driven maintenance" — is
+not promoted to a project-wide template at this commit.
+
+Promoting it requires a second consumer of the Kernel with
+its own evidence. Until then, the pattern here is a successful
+case study, not a generalised rule. Generalising without a
+second case would be a premature abstraction — the kind of
+refactor-by-analogy that this baseline is designed to resist.
+
+When a second consumer appears, it should be evaluated on
+its own evidence. If the pattern holds, it can be promoted
+to a template at that point, with the differences between
+the two cases made explicit. If it does not hold, the
+Inspector case remains a single well-documented example,
+not a flawed universal.
+
