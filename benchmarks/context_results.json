@@ -1,0 +1,33 @@
+{
+  "purpose": "cmdb_context composite cost",
+  "entity_count": 53,
+  "agent_under_test": "hermes-arquitectobi",
+  "results": {
+    "known_agent": {
+      "n": 30,
+      "min": 801834.17,
+      "p50": 806721.3145,
+      "p95": 815403.80245,
+      "p99": 820777.39736,
+      "max": 821779.671,
+      "mean": 807166.6719666667,
+      "stdev": 4656.383165788832,
+      "unit": "microseconds"
+    },
+    "unknown_agent": {
+      "n": 30,
+      "min": 799591.892,
+      "p50": 806263.882,
+      "p95": 913027.5040999996,
+      "p99": 1052951.28755,
+      "max": 1079722.436,
+      "mean": 821861.2945666667,
+      "stdev": 58997.49048183397,
+      "unit": "microseconds"
+    }
+  },
+  "notes": [
+    "Each call is preceded by gc.collect() so the heap pressure of one call doesn't pre-warm the next.",
+    "Until the canonical-representation transition completes (see consumers/inspector/NOTES.md), each cmdb_context call also parses all YAML files via load_entities_with_paths \u2014 that cost is included."
+  ]
+}

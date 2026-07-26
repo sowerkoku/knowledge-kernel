@@ -1,176 +1,151 @@
-#!/usr/bin/env python3
-"""
-Benchmark suite for Knowledge Kernel L2 evaluation.
+# ---
+# benchmark_queries.py
+# ====================
+#
+# PURPOSE: Measure query latency of the KernelEngine once it is hot.
+#
+# Before timing anything, the Engine is force-loaded via get_engine(...).
+# After that initial load, queries are timed in batches. Initialisation
+# cost is NOT included.
+#
+# This benchmark answers one question only:
+#
+#   How fast do reads look, on an Engine that is already in memory?
+#
+# ASSUMPTIONS:
+#   - Engine has been constructed at least once (warm state)
+#   - filesystem cache is whatever the OS provides; not primed/flushed
+#   - runs only one Python process
+#
+# NOT_MEASURING:
+#   - Engine initialisation       (use benchmark_lifecycle.py)
+#   - context composition         (use benchmark_context.py)
+#   - memory pressure             (use benchmark_memory.py when added)
+#   - dataset integrity (run cmdb_validate for that)
+#
+# USE:  python3 benchmarks/benchmark_queries.py
+# Writes benchmarks/queries_results.json and prints summary to stdout.
+# ---
 
-Measures:
-- cmdb_get(entity_id)
-- cmdb_list(kind)
-- cmdb_search(query)
-- cmdb_impact(entity_id)
-- batch queries (N sequential calls)
-
-Reports: P50, P95, max latency, dataset size, memory estimate.
-"""
-
-import os
+import gc
+import json
+import random
+import statistics
 import sys
 import time
-import statistics
 from pathlib import Path
 
-# Ensure repo is importable
-repo_root = Path(__file__).parent.parent
-sys.path.insert(0, str(repo_root))
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
 
-# Set data dir
-os.environ["CMDB_DATA_DIR"] = str(Path.home() / "knowledge" / "knowledge-kernel")
-
-from cmdb.api import cmdb_get, cmdb_list, cmdb_search, cmdb_impact
+from cmdb.api import (
+    cmdb_list, cmdb_exists, cmdb_get, cmdb_search, cmdb_impact,
+)
 
 
-def time_ms(fn, *args, **kwargs):
-    """Run fn and return (result, elapsed_ms)."""
-    start = time.perf_counter()
-    result = fn(*args, **kwargs)
-    elapsed = (time.perf_counter() - start) * 1000
-    return result, elapsed
-
-
-def percentile(data: list[float], p: float) -> float:
-    """Compute p-th percentile (0-100)."""
-    if not data:
+def percentile(sorted_values, p):
+    if not sorted_values:
         return 0.0
-    sorted_data = sorted(data)
-    k = int(len(sorted_data) * p / 100)
-    return sorted_data[min(k, len(sorted_data) - 1)]
+    k = (len(sorted_values) - 1) * (p / 100.0)
+    lo = int(k)
+    hi = min(lo + 1, len(sorted_values) - 1)
+    frac = k - lo
+    return sorted_values[lo] + (sorted_values[hi] - sorted_values[lo]) * frac
 
 
-def run_benchmark(name: str, latencies: list[float]) -> dict:
-    """Format benchmark results."""
-    if not latencies:
-        return {"name": name, "runs": 0}
+def time_call(fn, arg):
+    t0 = time.perf_counter_ns()
+    fn(arg)
+    t1 = time.perf_counter_ns()
+    return (t1 - t0) / 1_000.0  # microseconds
+
+
+def summarise(samples):
+    s = sorted(samples)
     return {
-        "name": name,
-        "runs": len(latencies),
-        "p50_ms": round(percentile(latencies, 50), 1),
-        "p95_ms": round(percentile(latencies, 95), 1),
-        "p99_ms": round(percentile(latencies, 99), 1),
-        "avg_ms": round(statistics.mean(latencies), 1),
-        "max_ms": round(max(latencies), 1),
-        "min_ms": round(min(latencies), 1),
+        "n":    len(s),
+        "min":  s[0],
+        "p50":  percentile(s, 50),
+        "p95":  percentile(s, 95),
+        "p99":  percentile(s, 99),
+        "max":  s[-1],
+        "mean": statistics.mean(s),
+        "stdev": statistics.stdev(s) if len(s) > 1 else 0.0,
+        "unit": "microseconds",
     }
 
 
-def main():
-    print("=" * 70)
-    print("Knowledge Kernel — L2 Benchmark (PRE-engine baseline)")
-    print("=" * 70)
-    print(f"Dataset: {os.environ['CMDB_DATA_DIR']}")
-    print()
+# Operations timed by entity_id (single argument).
+OPERATIONS = {
+    "exists": cmdb_exists,
+    "get":    cmdb_get,
+    "impact": cmdb_impact,
+}
 
+
+def main():
+    random.seed(20260725)
+
+    # Force Engine hot
+    from cmdb.engine import get_engine
+    from cmdb.config import get_config
+    get_engine(get_config().data_dir)
+
+    all_ids = sorted(e["id"] for e in cmdb_list())
+    n_total = len(all_ids)
+    print(f"Hot Engine. Dataset: {n_total} entities", file=sys.stderr)
+
+    N_WARM   = 1000
+    N_SEARCH = 200
+    queries = ["ollama", "postgres", "metabase", "docker", "redis", "vault", "monitoring"]
     results = {}
 
-    # ---- 1. cmdb_get (existent) ----
-    print("Running cmdb_get('ollama')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_get, "ollama")
-        lats.append(ms)
-    results["cmdb_get_ollama"] = run_benchmark("cmdb_get(ollama)", lats)
+    for op, fn in OPERATIONS.items():
+        warm = [time_call(fn, all_ids[i % n_total]) for i in range(N_WARM)]
+        rnd  = [time_call(fn, random.choice(all_ids)) for _ in range(N_WARM)]
+        h_eid = all_ids[n_total // 2]
+        hot  = [time_call(fn, h_eid) for _ in range(N_WARM)]
+        results[op] = {
+            "warm":   summarise(warm),
+            "random": summarise(rnd),
+            "hot":    summarise(hot),
+        }
 
-    # ---- 2. cmdb_get (non-existent) ----
-    print("Running cmdb_get('nonexistent')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_get, "nonexistent-xyz-12345")
-        lats.append(ms)
-    results["cmdb_get_nonexistent"] = run_benchmark("cmdb_get(nonexistent)", lats)
+    # search() takes a query string, not an id — separate timings.
+    search_samples = []
+    for _ in range(N_SEARCH):
+        gc.collect()
+        q = random.choice(queries)
+        search_samples.append(time_call(cmdb_search, q))
+    results["search"] = {"warm": summarise(search_samples)}
 
-    # ---- 3. cmdb_list(kind="asset") ----
-    print("Running cmdb_list(kind='asset')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_list, "asset")
-        lats.append(ms)
-    results["cmdb_list_asset"] = run_benchmark("cmdb_list(asset)", lats)
+    out = {
+        "purpose":  "Engine query latency (hot state)",
+        "samples":  {
+            op: {m: r["n"] for m, r in mvals.items()}
+            for op, mvals in results.items()
+        },
+        "results":  results,
+        "entity_count": n_total,
+        "notes": [
+            "Engine preloaded via get_engine() before any timing.",
+            "hot = same id; random = shuffled ids; warm = cycling ids.",
+        ],
+    }
 
-    # ---- 4. cmdb_list(kind="software") ----
-    print("Running cmdb_list(kind='software')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_list, "software")
-        lats.append(ms)
-    results["cmdb_list_software"] = run_benchmark("cmdb_list(software)", lats)
+    out_path = Path(__file__).parent / "queries_results.json"
+    out_path.write_text(json.dumps(out, indent=2, default=str))
 
-    # ---- 5. cmdb_list(kind="endpoint") ----
-    print("Running cmdb_list(kind='endpoint')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_list, "endpoint")
-        lats.append(ms)
-    results["cmdb_list_endpoint"] = run_benchmark("cmdb_list(endpoint)", lats)
-
-    # ---- 6. cmdb_search ----
-    print("Running cmdb_search('ollama')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_search, "ollama")
-        lats.append(ms)
-    results["cmdb_search_ollama"] = run_benchmark("cmdb_search(ollama)", lats)
-
-    # ---- 7. cmdb_impact ----
-    print("Running cmdb_impact('ollama')...")
-    lats = []
-    for _ in range(20):
-        _, ms = time_ms(cmdb_impact, "ollama")
-        lats.append(ms)
-    results["cmdb_impact_ollama"] = run_benchmark("cmdb_impact(ollama)", lats)
-
-    # ---- 8. Batch sequential: 50 cmdb_get calls ----
-    print("Running batch: 50x cmdb_get(ollama)...")
-    lats = []
-    for _ in range(50):
-        _, ms = time_ms(cmdb_get, "ollama")
-        lats.append(ms)
-    results["batch_50x_cmdb_get"] = run_benchmark("batch 50x cmdb_get(ollama)", lats)
-
-    # ---- 9. Batch sequential: 50 mixed calls ----
-    print("Running batch: 50 mixed queries...")
-    test_ids = ["ollama", "app-server-01", "hermes", "ollama-api", "hermes-ingenierosql"]
-    lats = []
-    for i in range(50):
-        eid = test_ids[i % len(test_ids)]
-        _, ms = time_ms(cmdb_get, eid)
-        lats.append(ms)
-    results["batch_50x_mixed"] = run_benchmark("batch 50x mixed cmdb_get", lats)
-
-    # ---- Print summary ----
-    print()
-    print("=" * 70)
-    print("RESULTS")
-    print("=" * 70)
-    for key, r in results.items():
-        print(f"\n{r['name']}:")
-        print(f"  Runs:     {r['runs']}")
-        print(f"  P50:      {r['p50_ms']} ms")
-        print(f"  P95:      {r['p95_ms']} ms")
-        print(f"  P99:      {r['p99_ms']} ms")
-        print(f"  Avg:      {r['avg_ms']} ms")
-        print(f"  Max:      {r['max_ms']} ms")
-        print(f"  Min:      {r['min_ms']} ms")
-
-    # Overall P95 across all
-    all_p95 = [r["p95_ms"] for r in results.values() if r["runs"] > 0]
-    overall_p95 = max(all_p95) if all_p95 else 0
-    print(f"\n{'=' * 70}")
-    print(f"OVERALL P95 (max across operations): {overall_p95} ms")
-    print(f"{'=' * 70}")
-
-    # Save to JSON for comparison
-    import json
-    out_file = Path(__file__).parent / "benchmark_results_pre.json"
-    out_file.write_text(json.dumps(results, indent=2))
-    print(f"\nSaved to: {out_file}")
+    print("\n=== Hot query latency (microseconds) ===\n", file=sys.stderr)
+    print(f"{'op':<10} {'mode':<8} {'n':<5} {'p50':<8} {'p95':<8} "
+          f"{'p99':<8} {'max':<8} {'mean':<8}", file=sys.stderr)
+    for op, modes in results.items():
+        for mode, r in modes.items():
+            print(f"{op:<10} {mode:<8} {r['n']:<5} "
+                  f"{r['p50']:<8.1f} {r['p95']:<8.1f} {r['p99']:<8.1f} "
+                  f"{r['max']:<8.1f} {r['mean']:<8.1f}",
+                  file=sys.stderr)
+    print(f"\nSaved to: {out_path}", file=sys.stderr)
 
 
 if __name__ == "__main__":

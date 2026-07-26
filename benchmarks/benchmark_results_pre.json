@@ -1,0 +1,92 @@
+{
+  "cmdb_get_ollama": {
+    "name": "cmdb_get(ollama)",
+    "runs": 20,
+    "p50_ms": 0.3,
+    "p95_ms": 899.8,
+    "p99_ms": 899.8,
+    "avg_ms": 45.3,
+    "max_ms": 899.8,
+    "min_ms": 0.3
+  },
+  "cmdb_get_nonexistent": {
+    "name": "cmdb_get(nonexistent)",
+    "runs": 20,
+    "p50_ms": 0.3,
+    "p95_ms": 0.4,
+    "p99_ms": 0.4,
+    "avg_ms": 0.3,
+    "max_ms": 0.4,
+    "min_ms": 0.3
+  },
+  "cmdb_list_asset": {
+    "name": "cmdb_list(asset)",
+    "runs": 20,
+    "p50_ms": 0.2,
+    "p95_ms": 0.4,
+    "p99_ms": 0.4,
+    "avg_ms": 0.2,
+    "max_ms": 0.4,
+    "min_ms": 0.2
+  },
+  "cmdb_list_software": {
+    "name": "cmdb_list(software)",
+    "runs": 20,
+    "p50_ms": 0.3,
+    "p95_ms": 0.4,
+    "p99_ms": 0.4,
+    "avg_ms": 0.3,
+    "max_ms": 0.4,
+    "min_ms": 0.3
+  },
+  "cmdb_list_endpoint": {
+    "name": "cmdb_list(endpoint)",
+    "runs": 20,
+    "p50_ms": 0.2,
+    "p95_ms": 0.3,
+    "p99_ms": 0.3,
+    "avg_ms": 0.2,
+    "max_ms": 0.3,
+    "min_ms": 0.2
+  },
+  "cmdb_search_ollama": {
+    "name": "cmdb_search(ollama)",
+    "runs": 20,
+    "p50_ms": 1.6,
+    "p95_ms": 2.1,
+    "p99_ms": 2.1,
+    "avg_ms": 1.7,
+    "max_ms": 2.1,
+    "min_ms": 1.6
+  },
+  "cmdb_impact_ollama": {
+    "name": "cmdb_impact(ollama)",
+    "runs": 20,
+    "p50_ms": 0.2,
+    "p95_ms": 0.3,
+    "p99_ms": 0.3,
+    "avg_ms": 0.2,
+    "max_ms": 0.3,
+    "min_ms": 0.2
+  },
+  "batch_50x_cmdb_get": {
+    "name": "batch 50x cmdb_get(ollama)",
+    "runs": 50,
+    "p50_ms": 0.3,
+    "p95_ms": 0.3,
+    "p99_ms": 0.4,
+    "avg_ms": 0.3,
+    "max_ms": 0.4,
+    "min_ms": 0.3
+  },
+  "batch_50x_mixed": {
+    "name": "batch 50x mixed cmdb_get",
+    "runs": 50,
+    "p50_ms": 0.3,
+    "p95_ms": 0.4,
+    "p99_ms": 0.6,
+    "avg_ms": 0.3,
+    "max_ms": 0.6,
+    "min_ms": 0.3
+  }
+}
