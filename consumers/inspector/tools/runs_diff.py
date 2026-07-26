@@ -43,6 +43,17 @@ Run = dict  # a deserialised Report.to_dict()
 # Finding identifiers
 # ---------------------------------------------------------------------------
 
+# Canonical identity lives in `inspector.identity`. This module only
+# knows how to extract identity inputs from a deserialised finding
+# (a dict) and delegate. Direction of dependencies:
+#
+#   tools/runs_diff.py -> inspector/identity
+#   inspector/report.py -> inspector/identity
+#
+# Both consumers go through the same API; the hash formula is not
+# duplicated.
+
+
 def finding_key(finding: dict) -> str:
     """Logical identity: survives across status/evidence changes.
 
@@ -50,7 +61,13 @@ def finding_key(finding: dict) -> str:
     (rule, entity) pair — the same underlying problem, even if its
     status or evidence has changed.
     """
-    return f"{finding['rule_id']}|{finding['entity_id']}"
+    # Aviod hard import to keep circulars at bay; revert to direct
+    # import once we confirm there is no cycle.
+    from inspector.identity import finding_key as _fk
+    return _fk(
+        rule_id=finding["rule_id"],
+        entity_id=finding["entity_id"],
+    )
 
 
 def finding_id(finding: dict) -> str:
@@ -60,21 +77,19 @@ def finding_id(finding: dict) -> str:
     observation. If either status or entity_hash differs, the
     finding_id differs.
     """
-    parts = [
-        finding["rule_id"],
-        finding["entity_id"],
-        finding["status"],
-    ]
+    from inspector.identity import finding_identity as _fi
+
     ev = finding.get("evidence")
-    if ev and ev.get("entity_hash") is not None:
-        parts.append(str(ev["entity_hash"]))
-    digest = _sha16("|".join(parts))
-    return f"{finding['rule_id']}|{finding['entity_id']}|{digest}"
+    evidence_hash = None
+    if ev is not None and ev.get("entity_hash") is not None:
+        evidence_hash = str(ev["entity_hash"])
 
-
-def _sha16(text: str) -> str:
-    import hashlib
-    return hashlib.sha256(text.encode()).hexdigest()[:16]
+    return _fi(
+        rule_id=finding["rule_id"],
+        entity_id=finding["entity_id"],
+        status=finding["status"],
+        evidence_hash=evidence_hash,
+    )
 
 
 # ---------------------------------------------------------------------------

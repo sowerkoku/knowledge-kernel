@@ -17,40 +17,21 @@ Never modifies the dataset.
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Iterable, Type
 
 from inspector import __version__, __policy_version__
+from inspector.identity import finding_identifier
 from inspector.kernel_api import KernelAPI, default_api
 from inspector.rule import Finding, Rule
 
 
-def finding_identifier(f: Finding) -> str:
-    """Stable identifier for an emitted finding.
-
-    Built from (rule_id, entity_id, status, evidence_hash). Two
-    runs that produce the same rule's verdict on the same entity
-    with the same evidence will receive the same identifier; that
-    is the property the Dataset-plane analyses rely on.
-
-    Skipped findings still receive an identifier so the report
-    count is symmetric with the rule's covered-entities count.
-    """
-    parts: list[str] = []
-    parts.append(f.rule_id)
-    parts.append(f.entity_id)
-    parts.append(f.status)
-    if f.evidence is not None:
-        eh = f.evidence.entity_hash
-        if eh is not None:
-            parts.append(str(eh))
-    digest = hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
-    # 16 hex chars = 64 bits — enough for collision-free inside one
-    # dataset, short enough to be readable.
-    return f"{f.rule_id}|{f.entity_id}|{digest[:16]}"
+# finding_identifier is re-exported here for backward compatibility
+# (`from inspector.report import finding_identifier`). The canonical
+# implementation lives in inspector.identity; this module's only
+# domain-specific work is to render findings into a Report.
 
 
 @dataclass(frozen=True)
