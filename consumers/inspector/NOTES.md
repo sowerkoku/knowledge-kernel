@@ -364,3 +364,35 @@ This baseline is the **reference state** against which subsequent
 Inspector changes are measured. It does not freeze the code — it
 freezes the responsibility claims above.
 
+#### Reactivation triggers (positive form)
+
+The Inspector is reopened when **any of the following** occurs:
+
+1. **A new functional requirement** appears (new rule, new evidence
+   shape, new consumer of the run output, new CLI surface).
+2. **A contract criterion breaks**: a property in `CONTRACT.md` is
+   violated by current behaviour, or the test suite fails against
+   the documented contract claims.
+3. **New architectural-debt evidence** appears: a duplicated concept
+   with more than one owner, a cycle in the dependency graph, a
+   layer violation, or a module where size / complexity actively
+   thwarts maintenance.
+4. **A governance decision changes**: an entry is added or removed
+   from `CSI.md`, the evolution policy in `CONTRACT.md` is
+   revised, or the versioning scheme is updated.
+
+These are the only legitimate reasons to revisit the Inspector
+after the architectural baseline. "Looking for more refactors
+without evidence" is **not** a reactivation trigger — it is the
+explicit anti-pattern this baseline is designed to resist.
+
+A reactivation triggered by event (1) or (2) opens a **feature or
+bug episode**. A reactivation triggered by event (3) opens an
+**audit episode** of the same shape as the one that produced this
+baseline. A reactivation triggered by event (4) is a **governance
+update** and is recorded in `CSI.md` itself.
+
+Each reactivation references the triggering event number above
+and the artefact that surfaced it. This keeps the reopening
+discipline auditable rather than informal.
+
