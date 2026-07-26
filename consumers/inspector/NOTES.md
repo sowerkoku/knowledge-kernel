@@ -206,6 +206,31 @@ representation held by `KernelEngine`.
 5. A gating test verifies that no execution path reachable from
    `cmdb_context` reconstructs the dataset by parsing YAML files.
 
+#### Test de invariancia funcional (antes del rendimiento)
+
+Cuando se implemente el refactor, el test primario es de **invariancia**,
+no de rendimiento:
+
+```
+# Ground truth: el comportamiento antes del cambio
+old = cmdb_context("ollama")          # comportamiento observado
+
+# Hipótesis: el comportamiento después del cambio es equivalente
+new = refactored_cmdb_context("ollama")
+
+assert old.keys() == new.keys()       # mismo contrato de claves
+assert old == new                     # equivalencia funcional exacta
+```
+
+Este test protege el **contrato observable** de `cmdb_context` durante
+el cambio. El benchmark mide el efecto secundario; no tiene peso sobre
+la decisión de aceptación.
+
+Solo después de que el test de invariancia passe se ejecutan los
+benchmarks (lifecycle / queries / context) para documentar el
+before/after. Si la latencia no baja, pero la invariancia se cumple,
+el cambio igual se acepta — porque elimina una violación arquitectónica.
+
 #### Out of scope (explicitly)
 
 - Modifying the dataset format.
@@ -232,4 +257,25 @@ representation held by `KernelEngine`.
 - Implementation: ⏳ not started; awaits an explicit activation
   decision (or remains in this notes file until something else
   activates it).
+
+### Relationship with PI-01 / F1
+
+The duplicate-representation phenomenon found here is **one instance**
+of the broader F1 class ("operational knowledge appears during agent
+work"). Completing this transition does **not** close F1 or justify
+closing PI-01.
+
+After implementation, verifiable questions for re-evaluating F1:
+
+- Does any public API remain that reconstructs the dataset by parsing
+  YAML when `KernelEngine` already holds that information?
+- Does any `yaml.safe_load()` call remain on a path reachable from a
+  public API?
+- Do more than one live representation of the same dataset coexist in
+  the same process?
+
+If **all three answers are "no"**, F1 is a stronger candidate for
+re-evaluation — but even then, PI-01 is a research programme, not a
+binary switch. The evaluation belongs to the PI process, not to this
+notes file.
 
