@@ -16,12 +16,19 @@ enforced implicitly by the test suite
 (`tests/test_finding_id.py:test_identifier_*` and
 `tests/test_runs_diff.py:test_finding_id_format`).
 
-This module exposes a single conceptual API (`finding_identity`) and
-one helper (`stable_finding_hash`). Both take the inputs that define
-the identity — *not* a Finding and *not* a dict. Callers translate
-their internal representation (Finding, deserialized dict, etc.)
-into the identity inputs and call the function. The identity does
-not know how the data is stored.
+This module exposes the conceptual API as public names:
+
+    finding_key        (rule_id, entity_id)             — public
+    finding_identity   (rule_id, entity_id, status,
+                         evidence_hash)                  — public
+
+and one implementation detail kept private:
+
+    _stable_finding_hash  (parts) -> 16-char hex digest   — internal
+
+The conceptual names are what callers use. The hash function is the
+mechanism behind them; callers do not need it because the conceptual
+API carries no information about how the digest is computed.
 
     Rule of thumb:
         "Una representación puede cambiar;
@@ -34,7 +41,7 @@ import hashlib
 from typing import Optional
 
 
-def stable_finding_hash(parts: list[str]) -> str:
+def _stable_finding_hash(parts: list[str]) -> str:
     """Compute the short, stable SHA-256-based hash for a finding.
 
     Args:
@@ -47,6 +54,10 @@ def stable_finding_hash(parts: list[str]) -> str:
     The hash is byte-stable for the same input list. The truncation
     to 16 hex chars (64 bits) is sufficient for in-dataset uniqueness
     and keeps IDs readable when eyeballed.
+
+    This is an implementation detail of the conceptual identity API
+    exposed above. It is private — callers should use
+    finding_key() or finding_identity().
     """
     digest = hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
     return digest[:16]
@@ -87,7 +98,7 @@ def finding_identity(
     payload: list[str] = [rule_id, entity_id, status]
     if evidence_hash is not None:
         payload.append(evidence_hash)
-    digest = stable_finding_hash(payload)
+    digest = _stable_finding_hash(payload)
     return f"{rule_id}|{entity_id}|{digest}"
 
 
