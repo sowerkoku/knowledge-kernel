@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable, Optional
 
-from inspector.evidence import Evidence
+from inspector.evidence import Evidence, collect_evidence
 from inspector.rule import Finding, Rule
 from inspector import __version__ as INSPECTOR_VERSION
 
@@ -58,13 +58,9 @@ class StaleEntityRule:
             entity_ids = [e["id"] for e in api.cmdb_list()]
 
         stale_after_days = int(policy.get("stale_after_days", DEFAULT_STALE_AFTER_DAYS))
-        engine = api.cmdb_engine_info()
 
         for eid in sorted(entity_ids):
-            ev_raw = api.cmdb_get(eid)
-            evidence = _evidence_from_result(
-                ev_raw, eid, engine.get("dataset_hash"), INSPECTOR_VERSION,
-            )
+            evidence = collect_evidence(api, eid, inspector_version=INSPECTOR_VERSION)
             observed_at = evidence.observed_at
             if observed_at is None:
                 yield Finding(
@@ -135,40 +131,7 @@ def _parse_iso(ts: str) -> datetime:
     return datetime.fromisoformat(ts)
 
 
-def _evidence_from_result(result, entity_id: str, dataset_hash, inspector_version) -> Evidence:
-    if not result.exists or result.evidence is None:
-        return Evidence(
-            api="cmdb_get",
-            entity_id=entity_id,
-            observed_at=None,
-            age_seconds=None,
-            ttl_seconds=None,
-            confidence_level=None,
-            confidence_basis=[],
-            entity_hash=None,
-            dataset_hash=dataset_hash,
-            inspector_version=inspector_version,
-        )
-    ev = result.evidence
-    basis = [str(b) for b in (ev.confidence_basis or [])]
-    confidence = (
-        getattr(ev.confidence_level, "name", str(ev.confidence_level))
-        if ev.confidence_level else None
-    )
-    return Evidence(
-        api="cmdb_get",
-        entity_id=entity_id,
-        observed_at=ev.observed_at,
-        age_seconds=float(ev.age_seconds()) if ev.observed_at else None,
-        ttl_seconds=ev.ttl_seconds,
-        confidence_level=confidence,
-        confidence_basis=basis,
-        entity_hash=ev.entity_hash,
-        dataset_hash=dataset_hash,
-        inspector_version=inspector_version,
-    )
-
-
 # Module-level singleton — every consumer of this rule uses the same
 # instance. Saves constructing it per call.
 RULE = StaleEntityRule()
+

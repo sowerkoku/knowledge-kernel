@@ -25,7 +25,6 @@ from inspector.report import run_inspector
 from inspector.rule import Finding, Rule, validate_rule_object
 from inspector.rules.stale_entity import (
     RULE as STALE_ENTITY_RULE,
-    _evidence_from_result,
     DEFAULT_STALE_AFTER_DAYS,
     StaleEntityRule,
 )

@@ -42,8 +42,8 @@ class Evidence:
     inspector_version: str = ""
 
 
-# Helper kept for backward compatibility with the previous API, but the
-# canonical entry point now takes a `api` and an `inspector_version`.
+# Canonical adapter from a public API result to an Evidence instance.
+# Use this everywhere a rule needs an Evidence object: it manages the
 def collect_evidence(api, entity_id: str, inspector_version: str) -> Evidence:
     """Build Evidence for entity_id using whatever public API the
     caller passes (typically `KernelAPI` from `inspector.kernel_api`).
