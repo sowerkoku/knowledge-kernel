@@ -1,0 +1,29 @@
+schema_version: 2
+id: fixture-server-a
+kind: asset
+domain: infrastructure
+metadata:
+  name: Fixture Server A
+  description: Test asset for CI — first entity
+  primary_ip: 10.0.0.1
+  hostname: fixture-a
+status: operational
+provenance:
+  discovered_by: test_fixture
+  discovery_method: direct_observation
+  discovery_run: '2026-01-01T00:00:00Z'
+evidence:
+  source: "CI test fixture — synthetic data"
+  observed_at: '2026-01-01T00:00:00Z'
+  confidence: high
+  method:
+    - "fixture entity for acceptance tests"
+relations:
+  - target: fixture-software-x
+    type: runs_on
+criticality:
+  business: low
+  operational: low
+  technical: low
+tags:
+  - ci-fixture

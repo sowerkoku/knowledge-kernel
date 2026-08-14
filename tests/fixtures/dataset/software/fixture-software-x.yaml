@@ -1,0 +1,26 @@
+schema_version: 2
+id: fixture-software-x
+kind: software
+domain: software
+metadata:
+  name: Fixture Software X
+  description: Test software for CI — runs on fixture-server-a
+  version: 1.0.0
+status: operational
+provenance:
+  discovered_by: test_fixture
+  discovery_method: direct_observation
+  discovery_run: '2026-01-01T00:00:00Z'
+evidence:
+  source: "CI test fixture — synthetic data"
+  observed_at: '2026-01-01T00:00:00Z'
+  confidence: high
+  method:
+    - "fixture entity for acceptance tests"
+relations: []
+criticality:
+  business: low
+  operational: low
+  technical: low
+tags:
+  - ci-fixture
